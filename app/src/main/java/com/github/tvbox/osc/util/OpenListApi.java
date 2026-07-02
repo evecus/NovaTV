@@ -39,7 +39,11 @@ public class OpenListApi {
 
     public static void logout() {
         Hawk.put(HawkConfig.OPENLIST_TOKEN, "");
-        Hawk.put(HawkConfig.OPENLIST_USERNAME, "");
+        // 若用户勾选了"记住登录信息"，保留用户名和密码，方便下次一键登录
+        if (!Hawk.get(HawkConfig.OPENLIST_SAVE_LOGIN, false)) {
+            Hawk.put(HawkConfig.OPENLIST_USERNAME, "");
+            Hawk.put(HawkConfig.OPENLIST_PASSWORD, "");
+        }
     }
 
     /**
