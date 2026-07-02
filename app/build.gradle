@@ -133,7 +133,7 @@ android {
         variant.outputs.configureEach { output ->
             def flavorNames = variant.productFlavors.collect { it.name }.join('-')
             // 构建自定义文件名
-            def fileName = "NovaTV_${variant.buildType.name}-${flavorNames}.apk"
+            def fileName = "NovaTV-${flavorNames}.apk"
             outputFileName = fileName
         }
     }
