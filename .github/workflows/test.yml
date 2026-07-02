@@ -44,11 +44,6 @@ jobs:
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
-      - name: Setup Android SDK Platform 33
-        run: |
-          echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-33" || \
-          echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-33"
-
       - name: Build armeabi-v7a Release APK (java32 flavor)
         run: ./gradlew assembleJava32Release --no-daemon
         env:
