@@ -1,4 +1,4 @@
-name: Build NovaTV Debug APK
+name: debug test
 
 on:
   workflow_dispatch:        # 允许手动触发
