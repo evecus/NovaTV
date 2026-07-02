@@ -47,12 +47,12 @@ jobs:
       - name: List output APKs
         run: find app/build/outputs/apk -name "*.apk" | sort
 
-      - name: Upload armeabi-v7a Debug APK
+      - name: Upload armeabi-v7a Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: NovaTV_debug-java32
-          path: app/build/outputs/apk/java32/debug/NovaTV-java32-debug.apk
-          retention-days: 30
+          name: NovaTV-armeabi-v7a-debug-${{ github.run_number }}
+          path: app/build/outputs/apk/java32/debug/*.apk
+          retention-days: 1
 
   # ── 发布 Pre-release ─────────────────────────────────────────────
   release:
