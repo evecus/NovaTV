@@ -91,5 +91,6 @@ jobs:
           tag_name: test
           name: NovaTV-test
           files: release-apks/*.apk
+          pre-release: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
