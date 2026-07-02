@@ -50,7 +50,7 @@ jobs:
       - name: Upload armeabi-v7a Debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: NovaTV-armeabi-v7a-Debug-${{ github.run_number }}
+          name: NovaTV_debug-java32
           path: app/build/outputs/apk/java32/debug/NovaTV-java32-debug.apk
           retention-days: 30
 
