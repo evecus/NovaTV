@@ -75,7 +75,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: test-debug
-          name: NovaTV-test
+          name: NovaTV-test-debug
           prerelease: true
           files: release-apks/*.apk
         env:
