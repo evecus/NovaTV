@@ -65,6 +65,8 @@ public class HawkConfig {
     public static final String OPENLIST_SERVER_URL = "openlist_server_url";
     public static final String OPENLIST_TOKEN = "openlist_token";
     public static final String OPENLIST_USERNAME = "openlist_username";
+    public static final String OPENLIST_PASSWORD = "openlist_password";
+    public static final String OPENLIST_SAVE_LOGIN = "openlist_save_login";
     public static boolean hotVodDelete;
     public static final String VOD_CONFIG_LIST = "vod_config_list";
     public static final String LIVE_SOURCE_LIST = "live_source_list";

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.base.BaseActivity;
 import com.github.tvbox.osc.server.ControlManager;
 import com.github.tvbox.osc.ui.tv.QRCodeGen;
+import com.github.tvbox.osc.util.HawkConfig;
 import com.github.tvbox.osc.util.OpenListApi;
 
 import me.jessyan.autosize.utils.AutoSizeUtils;
@@ -29,6 +31,7 @@ public class OpenListLoginActivity extends BaseActivity {
     private TextView tvError;
     private TextView btnLogin;
     private ProgressBar pbLogin;
+    private CheckBox cbSaveLogin;
     private boolean requesting = false;
     private ImageView ivRemoteQR;
     private TextView tvRemoteAddr;
@@ -46,12 +49,25 @@ public class OpenListLoginActivity extends BaseActivity {
         tvError = findViewById(R.id.tvOpenListError);
         btnLogin = findViewById(R.id.btnLogin);
         pbLogin = findViewById(R.id.pbOpenListLogin);
+        cbSaveLogin = findViewById(R.id.cbSaveLogin);
 
-        // 预填上次使用的服务器地址/用户名，方便重新登录
+        // 读取"记住登录信息"勾选状态
+        boolean saveLogin = com.orhanobut.hawk.Hawk.get(HawkConfig.OPENLIST_SAVE_LOGIN, false);
+        cbSaveLogin.setChecked(saveLogin);
+
+        // 回填登录信息
         String lastUrl = OpenListApi.getServerUrl();
-        String lastUser = com.orhanobut.hawk.Hawk.get(com.github.tvbox.osc.util.HawkConfig.OPENLIST_USERNAME, "");
-        if (!TextUtils.isEmpty(lastUrl)) etServerUrl.setText(lastUrl);
-        if (!TextUtils.isEmpty(lastUser)) etUsername.setText(lastUser);
+        if (!TextUtils.isEmpty(lastUrl)) {
+            etServerUrl.setText(lastUrl);
+        }
+        if (saveLogin) {
+            // 已勾选"记住登录信息"：回填用户名和密码
+            String lastUser = com.orhanobut.hawk.Hawk.get(HawkConfig.OPENLIST_USERNAME, "");
+            String lastPwd = com.orhanobut.hawk.Hawk.get(HawkConfig.OPENLIST_PASSWORD, "");
+            if (!TextUtils.isEmpty(lastUser)) etUsername.setText(lastUser);
+            if (!TextUtils.isEmpty(lastPwd)) etPassword.setText(lastPwd);
+        }
+        // 若未勾选，只回填了服务器地址，不回填用户名和密码
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,8 +98,10 @@ public class OpenListLoginActivity extends BaseActivity {
                     etServerUrl.requestFocus();
                 } else if (TextUtils.isEmpty(etUsername.getText().toString())) {
                     etUsername.requestFocus();
-                } else {
+                } else if (TextUtils.isEmpty(etPassword.getText().toString())) {
                     etPassword.requestFocus();
+                } else {
+                    btnLogin.requestFocus();
                 }
             }
         }, 200);
@@ -108,6 +126,9 @@ public class OpenListLoginActivity extends BaseActivity {
         tvError.setVisibility(View.GONE);
         pbLogin.setVisibility(View.VISIBLE);
         btnLogin.setEnabled(false);
+
+        final boolean saveLogin = cbSaveLogin.isChecked();
+
         OpenListApi.login(url, user, pwd, new OpenListApi.Callback<String>() {
             @Override
             public void onSuccess(String data) {
@@ -115,6 +136,19 @@ public class OpenListLoginActivity extends BaseActivity {
                     requesting = false;
                     pbLogin.setVisibility(View.GONE);
                     btnLogin.setEnabled(true);
+
+                    // 保存"记住登录信息"勾选状态
+                    com.orhanobut.hawk.Hawk.put(HawkConfig.OPENLIST_SAVE_LOGIN, saveLogin);
+                    if (saveLogin) {
+                        // 勾选时：保存用户名和密码（URL 在 OpenListApi.login 中已保存）
+                        com.orhanobut.hawk.Hawk.put(HawkConfig.OPENLIST_USERNAME, user);
+                        com.orhanobut.hawk.Hawk.put(HawkConfig.OPENLIST_PASSWORD, pwd);
+                    } else {
+                        // 未勾选时：清除已保存的用户名和密码
+                        com.orhanobut.hawk.Hawk.put(HawkConfig.OPENLIST_USERNAME, "");
+                        com.orhanobut.hawk.Hawk.put(HawkConfig.OPENLIST_PASSWORD, "");
+                    }
+
                     Toast.makeText(mContext, "登录成功", Toast.LENGTH_SHORT).show();
                     jumpActivity(OpenListBrowseActivity.class);
                     finish();
