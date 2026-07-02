@@ -74,8 +74,8 @@ jobs:
       - name: Create GitHub Pre-release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: debug-${{ github.run_number }}
-          name: NovaTV-debug-${{ github.run_number }}
+          tag_name: test-debug
+          name: NovaTV-test
           prerelease: true
           files: release-apks/*.apk
         env:
