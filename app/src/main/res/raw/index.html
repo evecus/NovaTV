@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+  <meta name="wechat-enable-text-zoom-em" content="true">
+  <title>TVBox</title>
+  <meta name="layoutmode" content="standard">
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="stylesheet" type="text/css" href="ui.css">
+  <style>
+    .cfg-section {
+      background: #fff;
+      border-radius: 12px;
+      margin: 16px 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+    .cfg-section-title {
+      font-size: 13px;
+      color: #888;
+      padding: 12px 16px 4px;
+      font-weight: 500;
+      letter-spacing: .5px;
+    }
+    .cfg-row {
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border-top: 1px solid #f0f0f0;
+      min-height: 48px;
+    }
+    .cfg-row:first-of-type { border-top: none; }
+    .cfg-label {
+      font-size: 14px;
+      color: #333;
+      min-width: 60px;
+      flex-shrink: 0;
+    }
+    .cfg-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      color: #333;
+      background: transparent;
+      padding: 10px 8px;
+    }
+    .cfg-input::placeholder { color: #bbb; }
+    .cfg-btn {
+      background: #07c160;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+    .cfg-btn:active { opacity: .8; }
+    .cfg-btn.warn { background: #fa5151; }
+    .cfg-tip {
+      font-size: 12px;
+      color: #bbb;
+      padding: 4px 16px 12px;
+      line-height: 1.6;
+    }
+    .toast-msg {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      background: rgba(0,0,0,.72);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 9999;
+      display: none;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="page__bd" style="height:100%;">
+      <div class="weui-tab">
+
+        <!-- Panel 1: 搜索 -->
+        <div id="panel1" role="tabpanel" aria-labelledby="tab1" class="weui-tab__panel">
+          <div class="weui-form">
+            <div class="weui-form__text-area">
+              <h2 class="weui-form__title">TVBox . 搜索</h2>
+            </div>
+            <div class="weui-form__control-area">
+              <div class="weui-cells__group weui-cells__group_form">
+                <div class="weui-cells">
+                  <div class="weui-cell weui-cell_active weui-cell_vcode weui-cell_wrap">
+                    <div class="weui-cell__bd weui-flex">
+                      <input id="search_key_word" class="weui-input weui-cell__control weui-cell__control_flex" type="text" value="" placeholder="请输入搜索的关键字..." />
+                      <button onclick="search(); return false;" class="weui-cell__control weui-btn weui-btn_default weui-vcode-btn">搜索</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 2: 推送 -->
+        <div id="panel2" role="tabpanel" aria-labelledby="tab2" class="weui-tab__panel" style="display:none;">
+          <div class="weui-form">
+            <div class="weui-form__text-area">
+              <h2 class="weui-form__title">TVBox . 推送</h2>
+            </div>
+            <div class="weui-form__control-area">
+              <div class="weui-cells__group weui-cells__group_form">
+                <div class="weui-cells">
+                  <div class="weui-cell weui-cell_active weui-cell_vcode weui-cell_wrap">
+                    <div class="weui-cell__bd weui-flex">
+                      <input id="push_url" class="weui-input weui-cell__control weui-cell__control_flex" type="text" value="" placeholder="请输入需要推送播放的地址..." />
+                      <button onclick="push(); return false;" class="weui-cell__control weui-btn weui-btn_default weui-vcode-btn">推送</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 3: 配置 (新设计) -->
+        <div id="panel3" role="tabpanel" aria-labelledby="tab3" class="weui-tab__panel" style="display:none;">
+
+          <!-- 仓库/线路配置 -->
+          <div class="cfg-section">
+            <div class="cfg-section-title">仓库 / 线路配置</div>
+            <div class="cfg-row">
+              <span class="cfg-label">名称</span>
+              <input id="repo_name" class="cfg-input" type="text" placeholder="配置名称（备注用）" />
+            </div>
+            <div class="cfg-row">
+              <span class="cfg-label">地址</span>
+              <input id="repo_url" class="cfg-input" type="url" placeholder="仓库或线路地址 URL" />
+            </div>
+            <div class="cfg-row" style="padding-bottom:12px;">
+              <span class="cfg-label"></span>
+              <button class="cfg-btn" onclick="pushRepo(); return false;">推送到电视</button>
+            </div>
+            <div class="cfg-tip">推送后 TV 端将立即切换至该仓库/线路，不会读取当前配置</div>
+          </div>
+
+          <!-- 直播地址配置 -->
+          <div class="cfg-section">
+            <div class="cfg-section-title">直播地址</div>
+            <div class="cfg-row">
+              <span class="cfg-label">名称</span>
+              <input id="live_name" class="cfg-input" type="text" placeholder="直播源名称（备注用）" />
+            </div>
+            <div class="cfg-row">
+              <span class="cfg-label">地址</span>
+              <input id="live_url" class="cfg-input" type="url" placeholder="直播源地址 URL 或 M3U" />
+            </div>
+            <div class="cfg-row" style="padding-bottom:12px;">
+              <span class="cfg-label"></span>
+              <button class="cfg-btn" onclick="pushLive(); return false;">推送到电视</button>
+            </div>
+            <div class="cfg-tip">推送后 TV 端将立即切换直播源，不会读取当前配置</div>
+          </div>
+
+          <!-- OpenList 信息 -->
+          <div class="cfg-section">
+            <div class="cfg-section-title">OpenList / AList 信息</div>
+            <div class="cfg-row">
+              <span class="cfg-label">服务器</span>
+              <input id="ol_server" class="cfg-input" type="url" placeholder="http://192.168.1.x:5244" />
+            </div>
+            <div class="cfg-row">
+              <span class="cfg-label">用户名</span>
+              <input id="ol_user" class="cfg-input" type="text" placeholder="admin" autocomplete="username" />
+            </div>
+            <div class="cfg-row">
+              <span class="cfg-label">密码</span>
+              <input id="ol_pass" class="cfg-input" type="password" placeholder="请输入密码" autocomplete="current-password" />
+            </div>
+            <div class="cfg-row" style="padding-bottom:12px;">
+              <span class="cfg-label"></span>
+              <button class="cfg-btn" onclick="pushOpenList(); return false;">推送到电视</button>
+            </div>
+            <div class="cfg-tip">TV 端将使用此账号登录 OpenList，成功后可在应用内浏览网盘文件</div>
+          </div>
+
+        </div>
+
+        <!-- 底部 TabBar -->
+        <div role="tablist" class="weui-tabbar">
+          <div id="tab1" role="tab" aria-labelledby="t1_title" aria-selected="true" aria-controls="panel1" class="weui-tabbar__item weui-bar__item_on">
+            <img style="width:20px;height:20px;margin:5px 0;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAuQAAALkB4qdB6AAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAKfSURBVFiFxdfPi1ZVGMDxz31HCnOq0ZkK00THlxhpIToELdxILkQMRMN1bly1EAlxY/0BswqiFi7KnW3aBSJFKTg2iJY/CsIfEZqjmSJiipKdFvfR9/Jy7zv3bd55PXA4l3vO8zzf85zznPOcLKWkU8mybCE2YhPGsATDuIGr+Blf43BK6U5HZWUlpVRaMQ/78ACpRr2H3WhU6SyrWZkHsixbjc+xJpSfwUmcivZCeGMtxqO+EeLHsCOldL5rD2AAH+FhGP4Nb9eZCd7BHwVv7Kol16bkk1DwLz7FYDfuxBC+KCzLh7UBsLMguLUbwyUgOwoT2T4jABbjbgh9NhvjBYiDoe8vDM0EsD8GX8CCHgEskodpwkSHcYbxT7hrXS+MF5RvCoC/8VwVwHsx6JdeGi8YmA79W8r6G9gcEXmiVtx2X05Gu7mss4FmnwCaZZ0N+dneD4AlZZ0NDMb39TkCeKz3mSqA6fheO0cAa6I9XQVwJb7fnCOA8WhPVQFMPk0AeEsep7cxv8dnwItaN+trVQdRhvMx6OMeAxwIvd/OdBe8q3V7re+R8S1auUGzI0AIHAmB3/HCLI2/JA+/hL0dxxaEFssjIuEoVvxP42PyQy3JQ29eLYAQHsefIXwX75PnjTUMD2AP7mslNsfxfG2Agvu+LCj5PtazaheviD00VZCZLExkstOSdprRtsI6Pq43cEieO36Dm239l0QKJs+Sr8X/KRVZ0UxuHcEEfm0zVKz38SM+wLNt8qu08oETWNhuo/RdUFayLFup9TIakqdv53AxpfSog9zr+A6vBuiGlNKtJwNmE25dREYTl8MTP2Gk1hL0GGJUfsYknMXLfQUIiOXy11aSP2pfqb0HelWyLFsm3xOj+KHvAAGxFF/h8n+GU+2I7XnhZwAAAABJRU5ErkJggg==" alt="" class="weui-tabbar__icon">
+            <p id="t1_title" aria-hidden="true" class="weui-tabbar__label">搜索</p>
+          </div>
+          <div id="tab2" role="tab" aria-labelledby="t2_title" aria-selected="false" aria-controls="panel2" class="weui-tabbar__item">
+            <img style="width:20px;height:20px;margin:5px 0;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAuQAAALkB4qdB6AAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAJlSURBVFiF7ddNSNRBGMfxzy6B4aUsoxfMXiQwO1kEHewQXUI6FXWqIIzQgii69XILOnToFlYE3SMSkiCJolsW7CUIen+j6FJBiGWm02FHG9fddZdELw48/Hdmfs/zfGfmYZjNhBDMZsvOavY5AMyrRpzJZLagHRuj1eAFnqI7hJCrmiCEMKVhIa5gFKGM9aGhkpjjsStI3orPMcEPXMQeNKAeW3Ea36LmEzZNCwAW4FUM/BItZbR1uBm1X7F8OgBuxIDPUFfBbtXgYfS5/V8A2JycbXvFW8tajCS71o29qK8W4FQMcr/EfAOeIIfVBXM9RQp0AIeqAbgfHSc7sTKpjYB3WJPMz0MzduMs3ibam1hUEgDz0Ymh6NBWJPnrIit8n0IU+NTiPH4X7mqhsANfCgLXJ/ONSfJconmUQKwts6ttCUTHBACcSwL24WB6tliFN0nyRYl+QQLxAU1lIE5E3XcsGxs8GQcH0VnEaVVyjrmxMxwDiL9TiI9TQIzV11FYKn/DBewv4fCkMHkhQBGIp2UAuqLmGlyInZ4yDpfRmyYvBpBA3ML1MvGakgV5EDu7SjmUCTQJoEK/xdH3RxYb5Fu/mWvN8fssi+HYGZxBgG3x25+VLzBYNxOZM5lMLY7F7t0sHsfOvpkAwHEswb0Qwh1YIf+YGMSOKoquF71V6Lfjj/yxt4zfhHH1IU4crraqK0zeKv9QCTgyPp4ILvl3teZwBuunKXkHfsbYJybMFQh3+vf+m24bQNckuCK0C3EAV/Ecv6INRfsdbTixP9FGoo2a+ILuQWOx3cnEpLPWZv2f0RzAX4u0r6Ikm0C7AAAAAElFTkSuQmCC" alt="" class="weui-tabbar__icon">
+            <p aria-hidden="true" id="t2_title" class="weui-tabbar__label">推送</p>
+          </div>
+          <div id="tab3" role="tab" aria-labelledby="t3_title" aria-selected="false" aria-controls="panel3" class="weui-tabbar__item">
+            <img style="width:20px;height:20px;margin:5px 0;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAAC5AAAAuQHip0HoAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAANtQTFRF////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhQHXOQAAAEh0Uk5TAAECBAUGCQoNDxITGiAhKC4xMjM0Nzg8P0BDT1dmbHR4fX+MlpedoKOkp6issri5vL2/zs/S19zd4OHi5OXp7e/x8/f6+/z+bkNkuAAAATRJREFUOMuNk2kzAmAUhR8iUSHSokWobCFLtFBI9fz/X+RDzdQY9brfzl3mbufAghVfVF+KLLHoh6p+RJckHGkxmSzq0ZKEjF2ArplfgcPjHYBC2w5Ax3YBYOf4cBovjfw82dy71/ElwOVY7/c2Tz4dlQB2h6q9b3uVxLQiUen53VMd7gINWwflgT7G503jjzoop55sQN5JBuK12sbiWBu1WhzSE/PcectSu/WOjs31uWcrm92ao/WmHc70OTtzbNfHOq5vz2D2Wc9Yq3zpBQCxV+339TUGwIV+VdaAxIMtAKq+5SD3bhWAlg+zvc+9BogMzQHkHEYAbjyf9bryFGDf/hT33Qc49eq/CaEWgSGDawYPFTx18Fl5J+mV76bhU2oVYcKUC5I2TPuwcP4tvaB4/5T/D6drVhrBHvH6AAAAAElFTkSuQmCC" alt="" class="weui-tabbar__icon">
+            <p id="t3_title" aria-hidden="true" class="weui-tabbar__label">配置</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast 提示 -->
+  <div class="toast-msg" id="cfgToast"></div>
+
+  <div role="alert" id="warnToast" style="display:none;">
+    <div class="weui-mask_transparent"></div>
+    <div class="weui-toast">
+      <i class="weui-icon-warn weui-icon_toast"></i>
+      <p class="weui-toast__content" id="warnToastContent"></p>
+    </div>
+  </div>
+
+  <div role="alert" id="loadingToast" style="display:none;">
+    <div class="weui-mask_transparent"></div>
+    <div class="weui-toast">
+      <span class="weui-primary-loading weui-icon_toast"><span class="weui-primary-loading__dot"></span></span>
+      <p class="weui-toast__content">发送中</p>
+    </div>
+  </div>
+
+  <script src="jquery.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
