@@ -64,7 +64,7 @@ jobs:
       - name: Upload armeabi-v7a Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: NovaTV-armeabi-v7a-Release-${{ github.run_number }}
+          name: NovaTV-armeabi-v7a-${{ github.run_number }}
           path: app/build/outputs/apk/java32/release/*.apk
           retention-days: 30
 
