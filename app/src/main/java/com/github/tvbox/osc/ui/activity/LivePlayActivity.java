@@ -135,10 +135,6 @@ public class LivePlayActivity extends BaseActivity {
     private LinearLayout tvLeftChannelListLayout;
     private TvRecyclerView mChannelGroupView;
     private TvRecyclerView mLiveChannelView;
-    private TvRecyclerView mSourceGridView;
-    private LiveSettingItemAdapter liveSourceAdapter;
-    private int mSourceFocusedChannelIndex = -1;
-    private int mSourceFocusedGroupIndex = -1;
     private LiveChannelGroupAdapter liveChannelGroupAdapter;
     private LiveChannelItemAdapter liveChannelItemAdapter;
 
@@ -271,7 +267,6 @@ public class LivePlayActivity extends BaseActivity {
         tvLeftChannelListLayout = findViewById(R.id.tvLeftChannnelListLayout);
         mChannelGroupView = findViewById(R.id.mGroupGridView);
         mLiveChannelView = findViewById(R.id.mChannelGridView);
-        mSourceGridView = findViewById(R.id.mSourceGridView);
         tvRightSettingLayout = findViewById(R.id.tvRightSettingLayout);
         mSettingGroupView = findViewById(R.id.mSettingGroupView);
         mSettingItemView = findViewById(R.id.mSettingItemView);
@@ -423,7 +418,6 @@ public class LivePlayActivity extends BaseActivity {
         initVideoView();
         initChannelGroupView();
         initLiveChannelView();
-        initLiveSourceView();
         initSettingGroupView();
         initSettingItemView();
         initLiveChannelList();
@@ -1180,23 +1174,6 @@ public class LivePlayActivity extends BaseActivity {
                     return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && isFocusInView(mLiveChannelView)) {
-                    // 有线路时先进入线路列表，否则展开EPG
-                    if (liveSourceAdapter != null && !liveSourceAdapter.getData().isEmpty()) {
-                        focusSourceList();
-                    } else {
-                        divLoadEpgRight(null);
-                    }
-                    return true;
-                }
-                if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && isFocusInView(mSourceGridView)) {
-                    // 从线路列表返回频道列表
-                    liveSourceAdapter.setFocusedItemIndex(-1);
-                    int chPos = mSourceFocusedChannelIndex >= 0 ? mSourceFocusedChannelIndex : currentLiveChannelIndex;
-                    liveChannelItemAdapter.setFocusedChannelIndex(chPos);
-                    focusRecyclerPosition(mLiveChannelView, chPos >= 0 ? chPos : 0);
-                    return true;
-                }
-                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && isFocusInView(mSourceGridView)) {
                     divLoadEpgRight(null);
                     return true;
                 }
@@ -1204,7 +1181,7 @@ public class LivePlayActivity extends BaseActivity {
                     divLoadEpgLeft(null);
                     return true;
                 }
-                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && !isFocusInView(mLiveChannelView) && !isFocusInView(mRightEpgList) && !isFocusInView(mSourceGridView)) {
+                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && !isFocusInView(mLiveChannelView) && !isFocusInView(mRightEpgList)) {
                     focusCurrentGroupInMenu();
                     return true;
                 }
@@ -1442,7 +1419,6 @@ public class LivePlayActivity extends BaseActivity {
         epgListAdapter.setFocusedEpgIndex(-1);
         mLiveChannelView.clearFocus();
         mRightEpgList.clearFocus();
-        updateSourceListForChannel(currentLiveChannelIndex);
         focusRecyclerPosition(mChannelGroupView, currentChannelGroupIndex);
     }
 
@@ -1484,7 +1460,6 @@ public class LivePlayActivity extends BaseActivity {
         liveChannelGroupAdapter.setFocusedGroupIndex(-1);
         liveChannelItemAdapter.setSelectedChannelIndex(currentLiveChannelIndex);
         liveChannelItemAdapter.setFocusedChannelIndex(currentLiveChannelIndex);
-        updateSourceListForChannel(currentLiveChannelIndex);
         focusRecyclerPosition(mLiveChannelView, currentLiveChannelIndex);
     }
 
@@ -2397,7 +2372,6 @@ public class LivePlayActivity extends BaseActivity {
                 if (position < 0) return;
                 liveChannelGroupAdapter.setFocusedGroupIndex(-1);
                 liveChannelItemAdapter.setFocusedChannelIndex(position);
-                updateSourceListForChannel(position);
             }
 
             @Override
@@ -2423,116 +2397,6 @@ public class LivePlayActivity extends BaseActivity {
             mHandler.postDelayed(mHideChannelListRun, postTimeout);
         }
         playChannel(liveChannelGroupAdapter.getSelectedGroupIndex(), position, false);
-    }
-
-    // -------- 线路选择列表（集成到频道弹窗右侧）--------
-
-    private void initLiveSourceView() {
-        mSourceGridView.setHasFixedSize(true);
-        mSourceGridView.setLayoutManager(new V7LinearLayoutManager(this.mContext, 1, false));
-        liveSourceAdapter = new LiveSettingItemAdapter();
-        mSourceGridView.setAdapter(liveSourceAdapter);
-        mSourceGridView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                mHandler.removeCallbacks(mHideChannelListRun);
-                mHandler.postDelayed(mHideChannelListRun, postTimeout);
-            }
-        });
-        // 电视遥控器
-        mSourceGridView.setOnItemListener(new TvRecyclerView.OnItemListener() {
-            @Override
-            public void onItemPreSelected(TvRecyclerView parent, View itemView, int position) {}
-            @Override
-            public void onItemSelected(TvRecyclerView parent, View itemView, int position) {
-                liveSourceAdapter.setFocusedItemIndex(position);
-                mHandler.removeCallbacks(mHideChannelListRun);
-                mHandler.postDelayed(mHideChannelListRun, postTimeout);
-            }
-            @Override
-            public void onItemClick(TvRecyclerView parent, View itemView, int position) {
-                clickSourceItem(position);
-            }
-        });
-        // 手机/模拟器
-        liveSourceAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                FastClickCheckUtil.check(view);
-                clickSourceItem(position);
-            }
-        });
-    }
-
-    /** 更新线路列表：显示指定频道列表位置对应频道的线路 */
-    private void updateSourceListForChannel(int channelPosition) {
-        if (liveSourceAdapter == null) return;
-        if (channelPosition < 0) {
-            liveSourceAdapter.setNewData(new ArrayList<>());
-            return;
-        }
-        int groupIndex = liveChannelGroupAdapter.getSelectedGroupIndex();
-        if (groupIndex < 0 || groupIndex >= liveChannelGroupList.size()) {
-            liveSourceAdapter.setNewData(new ArrayList<>());
-            return;
-        }
-        ArrayList<LiveChannelItem> channels = getLiveChannels(groupIndex);
-        if (channelPosition >= channels.size()) {
-            liveSourceAdapter.setNewData(new ArrayList<>());
-            return;
-        }
-        LiveChannelItem item = channels.get(channelPosition);
-        mSourceFocusedChannelIndex = channelPosition;
-        mSourceFocusedGroupIndex = groupIndex;
-        ArrayList<String> sourceNames = item.getChannelSourceNames();
-        if (sourceNames == null || sourceNames.isEmpty()) {
-            liveSourceAdapter.setNewData(new ArrayList<>());
-            return;
-        }
-        boolean isCurrentPlaying = (groupIndex == currentChannelGroupIndex
-                && channelPosition == currentLiveChannelIndex);
-        ArrayList<LiveSettingItem> sources = new ArrayList<>();
-        for (int i = 0; i < sourceNames.size(); i++) {
-            LiveSettingItem si = new LiveSettingItem();
-            si.setItemIndex(i);
-            si.setItemName(sourceNames.get(i));
-            si.setItemSelected(isCurrentPlaying && i == item.getSourceIndex());
-            sources.add(si);
-        }
-        liveSourceAdapter.setNewData(sources);
-        if (isCurrentPlaying && item.getSourceIndex() >= 0) {
-            mSourceGridView.scrollToPosition(item.getSourceIndex());
-        }
-    }
-
-    /** 点击线路列表某条线路 */
-    private void clickSourceItem(int position) {
-        if (mSourceFocusedGroupIndex < 0 || mSourceFocusedChannelIndex < 0) return;
-        ArrayList<LiveChannelItem> channels = getLiveChannels(mSourceFocusedGroupIndex);
-        if (mSourceFocusedChannelIndex >= channels.size()) return;
-        LiveChannelItem item = channels.get(mSourceFocusedChannelIndex);
-        if (position < 0 || position >= item.getSourceNum()) return;
-        item.setSourceIndex(position);
-        liveSourceAdapter.selectItem(position, true, true);
-        playChannel(mSourceFocusedGroupIndex, mSourceFocusedChannelIndex, true);
-        mHandler.removeCallbacks(mHideChannelListRun);
-        mHandler.postDelayed(mHideChannelListRun, postTimeout);
-    }
-
-    /** 将焦点移到线路列表 */
-    private void focusSourceList() {
-        if (liveSourceAdapter == null || liveSourceAdapter.getData().isEmpty()) return;
-        liveChannelItemAdapter.setFocusedChannelIndex(-1);
-        liveSourceAdapter.setFocusedItemIndex(-1);
-        int selIdx = liveSourceAdapter.getSelectedItemIndex();
-        if (selIdx < 0) selIdx = 0;
-        final int focusPos = selIdx;
-        mSourceGridView.scrollToPosition(focusPos);
-        mSourceGridView.setSelection(focusPos);
-        requestRecyclerItemFocus(mSourceGridView, focusPos, 0);
-        mHandler.removeCallbacks(mHideChannelListRun);
-        mHandler.postDelayed(mHideChannelListRun, postTimeout);
     }
 
     private void initSettingGroupView() {
@@ -3083,8 +2947,8 @@ public class LivePlayActivity extends BaseActivity {
     }
 
     private int getDefaultSettingGroupIndex() {
-        // 线路选择(index 0) 已移至频道列表弹窗，设置面板默认显示多源切换或画面比例
-        return liveSettingGroupList != null && liveSettingGroupList.size() > 5 ? 5 : 1;
+        if (hasCurrentLiveChannelSource()) return 0;
+        return liveSettingGroupList != null && liveSettingGroupList.size() > 5 ? 5 : 0;
     }
 
     private ArrayList<LiveSettingGroup> getVisibleLiveSettingGroupList() {
@@ -3094,9 +2958,7 @@ public class LivePlayActivity extends BaseActivity {
         for (LiveSettingGroup group : liveSettingGroupList) {
             if (group == null) continue;
             int groupIndex = group.getGroupIndex();
-            // 线路选择(0) 已移至频道列表弹窗右侧，不在设置面板显示
-            if (groupIndex == 0) continue;
-            if (!showChannelOptions && groupIndex >= 1 && groupIndex <= 2) continue;
+            if (!showChannelOptions && groupIndex >= 0 && groupIndex <= 2) continue;
             visibleGroups.add(group);
         }
         return visibleGroups;
