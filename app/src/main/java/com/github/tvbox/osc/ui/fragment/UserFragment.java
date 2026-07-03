@@ -95,26 +95,16 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
     @Override
     protected void onFragmentResume() {
         super.onFragmentResume();
-        if (Hawk.get(HawkConfig.HOME_REC_STYLE, false)) {
-            tvHotList.setVisibility(View.VISIBLE);
-            tvHotList.setHasFixedSize(true);
-            int spanCount = 5;
-            if(style!=null && Hawk.get(HawkConfig.HOME_REC, 0) == 1)spanCount=ImgUtil.spanCountByStyle(style,spanCount);
-            tvHotList.setLayoutManager(new V7GridLayoutManager(this.mContext, spanCount));
-            int paddingLeft = getResources().getDimensionPixelSize(R.dimen.vs_0);
-            int paddingTop = getResources().getDimensionPixelSize(R.dimen.vs_20);
-            int paddingRight = getResources().getDimensionPixelSize(R.dimen.vs_0);
-            int paddingBottom = getResources().getDimensionPixelSize(R.dimen.vs_20);
-            tvHotList.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
-        } else {
-            tvHotList.setVisibility(View.VISIBLE);
-            tvHotList.setLayoutManager(new V7LinearLayoutManager(this.mContext, V7LinearLayoutManager.HORIZONTAL, false));
-            int paddingLeft = getResources().getDimensionPixelSize(R.dimen.vs_0);
-            int paddingTop = getResources().getDimensionPixelSize(R.dimen.vs_20);
-            int paddingRight = getResources().getDimensionPixelSize(R.dimen.vs_0);
-            int paddingBottom = getResources().getDimensionPixelSize(R.dimen.vs_20);
-            tvHotList.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
-        }
+        tvHotList.setVisibility(View.VISIBLE);
+        tvHotList.setHasFixedSize(true);
+        int spanCount = 5;
+        if(style!=null && Hawk.get(HawkConfig.HOME_REC, 0) == 1)spanCount=ImgUtil.spanCountByStyle(style,spanCount);
+        tvHotList.setLayoutManager(new V7GridLayoutManager(this.mContext, spanCount));
+        int paddingLeft = getResources().getDimensionPixelSize(R.dimen.vs_0);
+        int paddingTop = getResources().getDimensionPixelSize(R.dimen.vs_20);
+        int paddingRight = getResources().getDimensionPixelSize(R.dimen.vs_0);
+        int paddingBottom = getResources().getDimensionPixelSize(R.dimen.vs_20);
+        tvHotList.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
         if (Hawk.get(HawkConfig.HOME_REC, 0) == 2) {
             List<VodInfo> allVodRecord = RoomDataManger.getAllVodRecord(20);
             List<Movie.Video> vodList = new ArrayList<>();
@@ -142,7 +132,7 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
         super.onViewCreated(view, savedInstanceState);
         TvRecyclerView hotList = view.findViewById(R.id.tvHotList);
         if (hotList != null && hotList.getLayoutManager() == null) {
-            hotList.setLayoutManager(new V7LinearLayoutManager(mContext, V7LinearLayoutManager.HORIZONTAL, false));
+            hotList.setLayoutManager(new V7GridLayoutManager(mContext, 5));
         }
     }
 
