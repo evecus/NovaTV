@@ -41,7 +41,6 @@ import com.github.tvbox.osc.ui.adapter.SortAdapter;
 import com.github.tvbox.osc.ui.dialog.SelectDialog;
 import com.github.tvbox.osc.ui.dialog.TipDialog;
 import com.github.tvbox.osc.ui.activity.CollectActivity;
-import com.github.tvbox.osc.ui.activity.FastSearchActivity;
 import com.github.tvbox.osc.ui.activity.HistoryActivity;
 import com.github.tvbox.osc.ui.activity.LivePlayActivity;
 import com.github.tvbox.osc.ui.activity.OpenListBrowseActivity;
@@ -153,11 +152,7 @@ public class HomeActivity extends BaseActivity {
                 } else if (id == R.id.topBtnLive) {
                     jumpActivity(LivePlayActivity.class);
                 } else if (id == R.id.topBtnSearch) {
-                    if (Hawk.get(HawkConfig.FAST_SEARCH_MODE, true)) {
-                        jumpActivity(FastSearchActivity.class);
-                    } else {
-                        jumpActivity(SearchActivity.class);
-                    }
+                    jumpActivity(SearchActivity.class);
                 } else if (id == R.id.topBtnPush) {
                     jumpActivity(PushActivity.class);
                 } else if (id == R.id.topBtnFavorite) {
