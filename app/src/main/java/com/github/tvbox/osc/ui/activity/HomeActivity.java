@@ -161,6 +161,17 @@ public class HomeActivity extends BaseActivity {
                     showSiteSwitch();
                 } else if (id == R.id.topBtnOpenList) {
                     jumpActivity(OpenListBrowseActivity.class);
+                } else if (id == R.id.topBtnRoute) {
+                    com.github.tvbox.osc.ui.dialog.RouteSelectDialog routeDialog =
+                        new com.github.tvbox.osc.ui.dialog.RouteSelectDialog(HomeActivity.this);
+                    routeDialog.setOnRouteSelectedListener((name, url) -> {
+                        String oldApi = com.orhanobut.hawk.Hawk.get(HawkConfig.API_URL, "");
+                        if (!oldApi.equals(url)) {
+                            com.orhanobut.hawk.Hawk.put(HawkConfig.API_URL, url);
+                            refreshHome();
+                        }
+                    });
+                    routeDialog.show();
                 } else if (id == R.id.topBtnSetting) {
                     jumpActivity(SettingActivity.class);
                 }
@@ -168,7 +179,7 @@ public class HomeActivity extends BaseActivity {
         };
         int[] topBtnIds = {
             R.id.topBtnHistory, R.id.topBtnLive, R.id.topBtnSearch, R.id.topBtnPush,
-            R.id.topBtnFavorite, R.id.topBtnRouteLine, R.id.topBtnOpenList, R.id.topBtnSetting
+            R.id.topBtnFavorite, R.id.topBtnRouteLine, R.id.topBtnOpenList, R.id.topBtnRoute, R.id.topBtnSetting
         };
         for (int btnId : topBtnIds) {
             View btn = findViewById(btnId);
