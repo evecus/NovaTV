@@ -1,0 +1,20 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="1024"
+    android:viewportHeight="1024">
+  <!-- 三条横线，表示线路列表 -->
+  <path
+      android:pathData="M128,224 L896,224 Q960,224 960,288 Q960,352 896,352 L128,352 Q64,352 64,288 Q64,224 128,224 Z"
+      android:fillColor="#ffffff"/>
+  <path
+      android:pathData="M128,464 L896,464 Q960,464 960,528 Q960,592 896,592 L128,592 Q64,592 64,528 Q64,464 128,464 Z"
+      android:fillColor="#ffffff"/>
+  <path
+      android:pathData="M128,704 L896,704 Q960,704 960,768 Q960,832 896,832 L128,832 Q64,832 64,768 Q64,704 128,704 Z"
+      android:fillColor="#ffffff"/>
+  <!-- 右侧小圆点选中指示 -->
+  <path
+      android:pathData="M800,288 m-48,0 a48,48 0,1 0,96 0 a48,48 0,1 0,-96 0"
+      android:fillColor="#4FC3F7"/>
+</vector>
