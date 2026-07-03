@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 整张卡片：横向两栏 -->
+    <LinearLayout
+        android:layout_width="@dimen/vs_960"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/shape_danmu_setting_bg"
+        android:orientation="horizontal">
+
+        <!-- ══════════ 左栏：品牌 + 二维码 ══════════ -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="@dimen/vs_40">
+
+            <!-- 标题 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/vs_50"
+                    android:layout_height="@dimen/vs_50"
+                    android:src="@drawable/icon_openlist" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/vs_15"
+                    android:text="OpenList 网盘"
+                    android:textColor="@color/dialog_text_primary"
+                    android:textSize="@dimen/ts_26"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 提示文字 -->
+            <TextView
+                android:id="@+id/tvOpenListTip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vs_15"
+                android:text="扫码在手机端远程推送配置"
+                android:textColor="@color/dialog_text_hint"
+                android:textSize="@dimen/ts_20" />
+
+            <!-- 二维码 -->
+            <ImageView
+                android:id="@+id/ivRemoteQR"
+                android:layout_width="@dimen/vs_180"
+                android:layout_height="@dimen/vs_180"
+                android:layout_marginTop="@dimen/vs_24"
+                android:layout_gravity="center_horizontal" />
+
+            <!-- 地址 -->
+            <TextView
+                android:id="@+id/tvRemoteAddr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vs_15"
+                android:textColor="@color/dialog_text_primary"
+                android:textSize="@dimen/ts_20" />
+        </LinearLayout>
+
+        <!-- 分割线 -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/dialog_text_hint"
+            android:alpha="0.2" />
+
+        <!-- ══════════ 右栏：登录表单 ══════════ -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="@dimen/vs_40">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="登录 OpenList / AList"
+                android:textColor="@color/dialog_text_primary"
+                android:textSize="@dimen/ts_26"
+                android:textStyle="bold" />
+
+            <!-- 服务器地址 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vs_24"
+                android:text="服务器地址"
+                android:textColor="@color/dialog_text_primary"
+                android:textSize="@dimen/ts_22" />
+
+            <EditText
+                android:id="@+id/etServerUrl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vs_8"
+                android:background="@drawable/input_dialog_api_input"
+                android:hint="http://192.168.1.10:5244"
+                android:imeOptions="actionNext|flagNoExtractUi"
+                android:inputType="textUri"
+                android:maxLines="1"
+                android:focusable="true"
+                android:nextFocusUp="@id/btnLogin"
+                android:nextFocusDown="@id/etUsername"
+                android:nextFocusForward="@id/etUsername"
+                android:paddingLeft="@dimen/vs_15"
+                android:paddingTop="@dimen/vs_12"
+                android:paddingRight="@dimen/vs_15"
+                android:paddingBottom="@dimen/vs_12"
+                android:singleLine="true"
+                android:textColor="@color/dialog_text_primary"
+                android:textColorHint="@color/dialog_text_hint"
+                android:textSize="@dimen/ts_22" />
+
+            <!-- 用户名 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vs_20"
+                android:text="用户名"
+                android:textColor="@color/dialog_text_primary"
+                android:textSize="@dimen/ts_22" />
+
+            <EditText
+                android:id="@+id/etUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vs_8"
+                android:background="@drawable/input_dialog_api_input"
+                android:hint="admin"
+                android:imeOptions="actionNext|flagNoExtractUi"
+                android:inputType="text"
+                android:maxLines="1"
+                android:focusable="true"
+                android:nextFocusUp="@id/etServerUrl"
+                android:nextFocusDown="@id/etPassword"
+                android:nextFocusForward="@id/etPassword"
+                android:paddingLeft="@dimen/vs_15"
+                android:paddingTop="@dimen/vs_12"
+                android:paddingRight="@dimen/vs_15"
+                android:paddingBottom="@dimen/vs_12"
+                android:singleLine="true"
+                android:textColor="@color/dialog_text_primary"
+                android:textColorHint="@color/dialog_text_hint"
+                android:textSize="@dimen/ts_22" />
+
+            <!-- 密码 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vs_20"
+                android:text="密码"
+                android:textColor="@color/dialog_text_primary"
+                android:textSize="@dimen/ts_22" />
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vs_8"
+                android:background="@drawable/input_dialog_api_input"
+                android:hint="请输入密码"
+                android:imeOptions="actionDone|flagNoExtractUi"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:focusable="true"
+                android:nextFocusUp="@id/etUsername"
+                android:nextFocusDown="@id/cbSaveLogin"
+                android:nextFocusForward="@id/cbSaveLogin"
+                android:paddingLeft="@dimen/vs_15"
+                android:paddingTop="@dimen/vs_12"
+                android:paddingRight="@dimen/vs_15"
+                android:paddingBottom="@dimen/vs_12"
+                android:singleLine="true"
+                android:textColor="@color/dialog_text_primary"
+                android:textColorHint="@color/dialog_text_hint"
+                android:textSize="@dimen/ts_22" />
+
+            <!-- 错误提示 -->
+            <TextView
+                android:id="@+id/tvOpenListError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vs_15"
+                android:text=""
+                android:textColor="#FF5252"
+                android:textSize="@dimen/ts_20"
+                android:visibility="gone" />
+
+            <!-- 登录按钮行：左边勾选框 + 右边按钮 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vs_30"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <!-- 记住登录信息勾选框 -->
+                <CheckBox
+                    android:id="@+id/cbSaveLogin"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:focusable="true"
+                    android:nextFocusUp="@id/etPassword"
+                    android:nextFocusDown="@id/etServerUrl"
+                    android:nextFocusLeft="@id/cbSaveLogin"
+                    android:nextFocusRight="@id/btnLogin"
+                    android:text="记住登录信息"
+                    android:textColor="@color/dialog_text_primary"
+                    android:textSize="@dimen/ts_20" />
+
+                <ProgressBar
+                    android:id="@+id/pbOpenListLogin"
+                    android:layout_width="@dimen/vs_30"
+                    android:layout_height="@dimen/vs_30"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="@dimen/vs_15"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/btnLogin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_danmu_setting"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:nextFocusUp="@id/cbSaveLogin"
+                    android:nextFocusDown="@id/etServerUrl"
+                    android:nextFocusLeft="@id/cbSaveLogin"
+                    android:paddingLeft="@dimen/vs_40"
+                    android:paddingTop="@dimen/vs_12"
+                    android:paddingRight="@dimen/vs_40"
+                    android:paddingBottom="@dimen/vs_12"
+                    android:text="登录"
+                    android:textColor="@color/dialog_text_primary"
+                    android:textSize="@dimen/ts_24" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</FrameLayout>
