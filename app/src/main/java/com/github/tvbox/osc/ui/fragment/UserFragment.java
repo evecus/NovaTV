@@ -66,14 +66,6 @@ import java.util.List;
  * @description:
  */
 public class UserFragment extends BaseLazyFragment implements View.OnClickListener {
-    private LinearLayout tvLive;
-    private LinearLayout tvSearch;
-    private LinearLayout tvSetting;
-    private LinearLayout tvHistory;
-    private LinearLayout tvCollect;
-    private LinearLayout tvPush;
-    private LinearLayout tvOpenList;
-    private LinearLayout tvRouteLine;
     public static HomeHotVodAdapter homeHotVodAdapter;
     private List<Movie.Video> homeSourceRec;
     public static TvRecyclerView tvHotList;
@@ -152,30 +144,6 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
     protected void init() {
         EventBus.getDefault().register(this);
         sourceViewModel = new ViewModelProvider(this).get(SourceViewModel.class);
-        tvLive = findViewById(R.id.tvLive);
-        tvSearch = findViewById(R.id.tvSearch);
-        tvSetting = findViewById(R.id.tvSetting);
-        tvCollect = findViewById(R.id.tvFavorite);
-        tvHistory = findViewById(R.id.tvHistory);
-        tvPush = findViewById(R.id.tvPush);
-        tvOpenList = findViewById(R.id.tvOpenList);
-        tvRouteLine = findViewById(R.id.tvRouteLine);
-        tvLive.setOnClickListener(this);
-        tvSearch.setOnClickListener(this);
-        tvSetting.setOnClickListener(this);
-        tvHistory.setOnClickListener(this);
-        tvPush.setOnClickListener(this);
-        tvCollect.setOnClickListener(this);
-        tvOpenList.setOnClickListener(this);
-        tvRouteLine.setOnClickListener(this);
-        tvLive.setOnFocusChangeListener(focusChangeListener);
-        tvSearch.setOnFocusChangeListener(focusChangeListener);
-        tvSetting.setOnFocusChangeListener(focusChangeListener);
-        tvHistory.setOnFocusChangeListener(focusChangeListener);
-        tvPush.setOnFocusChangeListener(focusChangeListener);
-        tvCollect.setOnFocusChangeListener(focusChangeListener);
-        tvOpenList.setOnFocusChangeListener(focusChangeListener);
-        tvRouteLine.setOnFocusChangeListener(focusChangeListener);
         tvHotList = findViewById(R.id.tvHotList);
         if (Hawk.get(HawkConfig.HOME_REC, 0) == 1 && homeSourceRec!=null) {
             style=ImgUtil.initStyle();
@@ -354,55 +322,10 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
         return result;
     }
 
-    private View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
-        @Override
-        public void onFocusChange(View v, boolean hasFocus) {
-            if (hasFocus)
-                v.animate().scaleX(1.05f).scaleY(1.05f).setDuration(300).setInterpolator(new BounceInterpolator()).start();
-            else
-                v.animate().scaleX(1.0f).scaleY(1.0f).setDuration(300).setInterpolator(new BounceInterpolator()).start();
-        }
-    };
-
     @Override
     public void onClick(View v) {
-    	
-    	// takagen99: Remove Delete Mode
         HawkConfig.hotVodDelete = false;
-    
         FastClickCheckUtil.check(v);
-        if (v.getId() == R.id.tvLive) {
-            jumpActivity(LivePlayActivity.class);
-        } else if (v.getId() == R.id.tvSearch) {
-            jumpActivity(SearchActivity.class);
-        } else if (v.getId() == R.id.tvSetting) {
-            jumpActivity(SettingActivity.class);
-        } else if (v.getId() == R.id.tvHistory) {
-            jumpActivity(HistoryActivity.class);
-        } else if (v.getId() == R.id.tvPush) {
-            jumpActivity(PushActivity.class);
-        } else if (v.getId() == R.id.tvFavorite) {
-            jumpActivity(CollectActivity.class);
-        } else if (v.getId() == R.id.tvOpenList) {
-            if (OpenListApi.isLogin()) {
-                jumpActivity(OpenListBrowseActivity.class);
-            } else {
-                jumpActivity(OpenListLoginActivity.class);
-            }
-        } else if (v.getId() == R.id.tvRouteLine) {
-            com.github.tvbox.osc.ui.dialog.RouteSelectDialog routeDialog = new com.github.tvbox.osc.ui.dialog.RouteSelectDialog(mActivity);
-            routeDialog.setOnRouteSelectedListener((name, url) -> {
-                android.widget.Toast.makeText(mContext, "已切换线路：" + name, android.widget.Toast.LENGTH_SHORT).show();
-                // Restart to apply new API URL
-                android.content.Intent intent = mContext.getPackageManager().getLaunchIntentForPackage(mContext.getPackageName());
-                if (intent != null) {
-                    intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    System.exit(0);
-                }
-            });
-            routeDialog.show();
-        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
