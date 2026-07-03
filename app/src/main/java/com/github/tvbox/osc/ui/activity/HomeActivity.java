@@ -1,10 +1,6 @@
 package com.github.tvbox.osc.ui.activity;
 
 import android.Manifest;
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.IntEvaluator;
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.DialogInterface;
@@ -44,12 +40,19 @@ import com.github.tvbox.osc.ui.adapter.SelectDialogAdapter;
 import com.github.tvbox.osc.ui.adapter.SortAdapter;
 import com.github.tvbox.osc.ui.dialog.SelectDialog;
 import com.github.tvbox.osc.ui.dialog.TipDialog;
+import com.github.tvbox.osc.ui.activity.CollectActivity;
+import com.github.tvbox.osc.ui.activity.FastSearchActivity;
+import com.github.tvbox.osc.ui.activity.HistoryActivity;
+import com.github.tvbox.osc.ui.activity.LivePlayActivity;
+import com.github.tvbox.osc.ui.activity.OpenListBrowseActivity;
+import com.github.tvbox.osc.ui.activity.PushActivity;
+import com.github.tvbox.osc.ui.activity.SearchActivity;
 import com.github.tvbox.osc.ui.fragment.GridFragment;
 import com.github.tvbox.osc.ui.fragment.UserFragment;
 import com.github.tvbox.osc.ui.tv.widget.DefaultTransformer;
 import com.github.tvbox.osc.ui.tv.widget.FixedSpeedScroller;
 import com.github.tvbox.osc.ui.tv.widget.NoScrollViewPager;
-import com.github.tvbox.osc.ui.tv.widget.ViewObj;
+
 import com.github.tvbox.osc.util.AppManager;
 import com.github.tvbox.osc.util.DefaultConfig;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
@@ -104,7 +107,7 @@ public class HomeActivity extends BaseActivity {
         @Override
         public void run() {
             Date date = new Date();
-            SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy/MM/dd  E  HH:mm", Locale.CHINA);
+            SimpleDateFormat timeFormat = new SimpleDateFormat("M月d日  HH:mm", Locale.CHINA);
             tvDate.setText(timeFormat.format(date));
             mHandler.postDelayed(this, 1000);
         }
@@ -140,6 +143,44 @@ public class HomeActivity extends BaseActivity {
         this.contentLayout = findViewById(R.id.contentLayout);
         this.mGridView = findViewById(R.id.mGridView);
         this.mViewPager = findViewById(R.id.mViewPager);
+        // 初始化顶部8个图标按钮
+        View.OnClickListener topBtnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int id = v.getId();
+                if (id == R.id.topBtnHistory) {
+                    jumpActivity(HistoryActivity.class);
+                } else if (id == R.id.topBtnLive) {
+                    jumpActivity(LivePlayActivity.class);
+                } else if (id == R.id.topBtnSearch) {
+                    if (Hawk.get(HawkConfig.FAST_SEARCH_MODE, true)) {
+                        jumpActivity(FastSearchActivity.class);
+                    } else {
+                        jumpActivity(SearchActivity.class);
+                    }
+                } else if (id == R.id.topBtnPush) {
+                    jumpActivity(PushActivity.class);
+                } else if (id == R.id.topBtnFavorite) {
+                    jumpActivity(CollectActivity.class);
+                } else if (id == R.id.topBtnRouteLine) {
+                    showSiteSwitch();
+                } else if (id == R.id.topBtnOpenList) {
+                    jumpActivity(OpenListBrowseActivity.class);
+                } else if (id == R.id.topBtnSetting) {
+                    jumpActivity(SettingActivity.class);
+                }
+            }
+        };
+        int[] topBtnIds = {
+            R.id.topBtnHistory, R.id.topBtnLive, R.id.topBtnSearch, R.id.topBtnPush,
+            R.id.topBtnFavorite, R.id.topBtnRouteLine, R.id.topBtnOpenList, R.id.topBtnSetting
+        };
+        for (int btnId : topBtnIds) {
+            View btn = findViewById(btnId);
+            if (btn != null) {
+                btn.setOnClickListener(topBtnClickListener);
+            }
+        }
         this.sortAdapter = new SortAdapter();
         this.mGridView.setLayoutManager(new V7LinearLayoutManager(this.mContext, 0, false));
         this.mGridView.setSpacingWithMargins(0, AutoSizeUtils.dp2px(this.mContext, 10.0f));
@@ -635,52 +676,8 @@ public class HomeActivity extends BaseActivity {
     byte topHide = 0;
 
     private void changeTop(boolean hide) {
-        ViewObj viewObj = new ViewObj(topLayout, (ViewGroup.MarginLayoutParams) topLayout.getLayoutParams());
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                topHide = (byte) (hide ? 1 : 0);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-        if (hide && topHide == 0) {
-            animatorSet.playTogether(ObjectAnimator.ofObject(viewObj, "marginTop", new IntEvaluator(),
-                            AutoSizeUtils.mm2px(this.mContext, 10.0f),
-                            AutoSizeUtils.mm2px(this.mContext, 0.0f)),
-                    ObjectAnimator.ofObject(viewObj, "height", new IntEvaluator(),
-                            AutoSizeUtils.mm2px(this.mContext, 50.0f),
-                            AutoSizeUtils.mm2px(this.mContext, 1.0f)),
-                    ObjectAnimator.ofFloat(this.topLayout, "alpha", 1.0f, 0.0f));
-            animatorSet.setDuration(200);
-            animatorSet.start();
-            return;
-        }
-        if (!hide && topHide == 1) {
-            animatorSet.playTogether(ObjectAnimator.ofObject(viewObj, "marginTop", new IntEvaluator(),
-                            AutoSizeUtils.mm2px(this.mContext, 0.0f),
-                            AutoSizeUtils.mm2px(this.mContext, 10.0f)),
-                    ObjectAnimator.ofObject(viewObj, "height", new IntEvaluator(),
-                            AutoSizeUtils.mm2px(this.mContext, 1.0f),
-                            AutoSizeUtils.mm2px(this.mContext, 50.0f)),
-                    ObjectAnimator.ofFloat(this.topLayout, "alpha", 0.0f, 1.0f));
-            animatorSet.setDuration(200);
-            animatorSet.start();
-        }
+        // 顶部栏始终显示，不隐藏
+        topHide = 0;
     }
 
     @Override
