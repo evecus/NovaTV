@@ -257,9 +257,6 @@ public class ApiConfig {
     public void loadLiveConfig(boolean useCache, LoadConfigCallback callback) {
         String apiUrl = Hawk.get(HawkConfig.LIVE_API_URL, "");
         if (apiUrl.isEmpty()) {
-            apiUrl = Hawk.get(HawkConfig.API_URL, "");
-        }
-        if (apiUrl.isEmpty()) {
             callback.error("-1");
             return;
         }
@@ -323,7 +320,6 @@ public class ApiConfig {
 
     public boolean shouldReloadLiveConfig() {
         String apiUrl = Hawk.get(HawkConfig.LIVE_API_URL, "");
-        if (apiUrl.isEmpty()) apiUrl = Hawk.get(HawkConfig.API_URL, "");
         return liveChannelGroupList == null || liveChannelGroupList.isEmpty() || !apiUrl.equals(loadedLiveConfigUrl);
     }
 
@@ -802,37 +798,7 @@ public class ApiConfig {
                 setDefaultParse(parseBeanList.get(0));
         }
 
-        // 直播源
-        String live_api_url=Hawk.get(HawkConfig.LIVE_API_URL,"");
-        if(live_api_url.isEmpty() || apiUrl.equals(live_api_url)){
-            LOG.i("echo-load-config_live");
-            initLiveSettings();
-            if(infoJson.has("lives")){
-                JsonArray lives_groups=infoJson.get("lives").getAsJsonArray();
-                int live_group_index=getLiveGroupIndex();
-                if(live_group_index>lives_groups.size()-1)live_group_index=0;
-                Hawk.put(HawkConfig.LIVE_GROUP_LIST,lives_groups);
-                //加载多源配置
-                try {
-                    ArrayList<LiveSettingItem> liveSettingItemList = new ArrayList<>();
-                    for (int i=0; i< lives_groups.size();i++) {
-                        JsonObject jsonObject = lives_groups.get(i).getAsJsonObject();
-                        String name = jsonObject.has("name")?jsonObject.get("name").getAsString():"线路"+(i+1);
-                        LiveSettingItem liveSettingItem = new LiveSettingItem();
-                        liveSettingItem.setItemIndex(i);
-                        liveSettingItem.setItemName(name);
-                        liveSettingItemList.add(liveSettingItem);
-                    }
-                    liveSettingGroupList.get(5).setLiveSettingItems(liveSettingItemList);
-                } catch (Exception e) {
-                    // 捕获任何可能发生的异常
-                    e.printStackTrace();
-                }
-
-                JsonObject livesOBJ = lives_groups.get(live_group_index).getAsJsonObject();
-                loadLiveApi(livesOBJ);
-            }
-        }
+        // 直播源仅从独立直播源 URL (LIVE_API_URL) 加载，不从主接口 lives 字段解析
 
         myHosts = new HashMap<>();
         if (infoJson.has("hosts")) {
@@ -1051,20 +1017,8 @@ public class ApiConfig {
         JsonObject infoJson = gson.fromJson(jsonStr, JsonObject.class);
         // spider
         liveSpider = DefaultConfig.safeJsonString(infoJson, "spider", "");
-        // 直播源
+        // 直播源仅从独立直播源 URL (LIVE_API_URL) 加载，不从 lives 字段解析
         initLiveSettings();
-        if(infoJson.has("lives")){
-            JsonArray lives_groups=infoJson.get("lives").getAsJsonArray();
-
-            int live_group_index=getLiveGroupIndex();
-            if(live_group_index>lives_groups.size()-1)live_group_index=0;
-            Hawk.put(HawkConfig.LIVE_GROUP_LIST,lives_groups);
-            //加载内部多线路配置（存储到LIVE_GROUP_LIST供播放器内部切换）
-            // Note: 设置面板的多源切换 (index 5) 使用 LIVE_SOURCE_LIST，不在此处更新
-
-            JsonObject livesOBJ = lives_groups.get(live_group_index).getAsJsonObject();
-            loadLiveApi(livesOBJ);
-        }
 
         myHosts = new HashMap<>();
         if (infoJson.has("hosts")) {
