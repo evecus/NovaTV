@@ -1,4 +1,4 @@
-name: Build TV APK
+name: release
 
 on:
   workflow_dispatch:        # 允许手动触发
