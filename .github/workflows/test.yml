@@ -67,6 +67,6 @@ jobs:
           tag_name: test
           name: NovaTV-test-release
           files: release/*
-          prerelease: false
+          prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
