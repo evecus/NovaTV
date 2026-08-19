@@ -55,7 +55,7 @@ jobs:
 
       - run: |
           mkdir -p release
-          cp app/build/outputs/apk/java32/release/*.apk release/test-${{ github.run_number }}.apk
+          cp app/build/outputs/apk/java32/release/*.apk release/NovaTV-test-${{ github.run_number }}.apk
 
       - name: Archive source code
         run: |
