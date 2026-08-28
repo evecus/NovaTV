@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/app_bg">
+
+    <xyz.doikki.videoplayer.player.VideoView
+        android:id="@+id/mVideoView"
+        android:layout_width="2dp"
+        android:layout_height="2dp"
+        android:layout_gravity="top|left" />
+
+    <LinearLayout
+        android:id="@+id/audioContentRoot"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:orientation="horizontal"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:padding="@dimen/vs_40">
+
+        <!-- 左侧：封面垂直居中 -->
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/ivAlbumArt"
+                android:layout_width="@dimen/vs_340"
+                android:layout_height="@dimen/vs_340"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/llNoCover"
+                android:layout_width="@dimen/vs_340"
+                android:layout_height="@dimen/vs_340"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/vs_120"
+                    android:layout_height="@dimen/vs_120"
+                    android:alpha="0.5"
+                    android:src="@drawable/icon_audio" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vs_15"
+                    android:text="暂无封面"
+                    android:textColor="#66FFFFFF"
+                    android:textSize="@dimen/ts_20" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- 右侧：歌名+歌手+歌词+进度条，整体垂直居中，内容水平居中 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center_horizontal|center_vertical">
+
+            <ProgressBar
+                android:id="@+id/pbAudioLoading"
+                android:layout_width="@dimen/vs_40"
+                android:layout_height="@dimen/vs_40"
+                android:layout_marginBottom="@dimen/vs_10"
+                android:visibility="gone" />
+
+            <!-- 歌名居中 -->
+            <TextView
+                android:id="@+id/tvSongName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/ts_34"
+                android:textStyle="bold"
+                tools:text="歌曲名称" />
+
+            <!-- 歌手居中 -->
+            <TextView
+                android:id="@+id/tvArtistRight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vs_8"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:textColor="#AAFFFFFF"
+                android:textSize="@dimen/ts_22"
+                android:visibility="gone"
+                tools:text="歌手名 · 专辑" />
+
+            <!-- 歌词区，撑满剩余高度 -->
+            <com.github.tvbox.osc.ui.widget.LrcView
+                android:id="@+id/lrcView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="@dimen/vs_15" />
+
+            <!-- 进度条 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vs_15"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvCurTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/ts_20"
+                    tools:text="00:00" />
+
+                <SeekBar
+                    android:id="@+id/seekBar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/vs_15"
+                    android:layout_marginRight="@dimen/vs_15"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:max="1000"
+                    android:maxHeight="@dimen/vs_4"
+                    android:minHeight="@dimen/vs_4"
+                    android:progressTint="@color/color_FF5F00"
+                    android:thumbTint="@color/color_FF5F00" />
+
+                <TextView
+                    android:id="@+id/tvTotalTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/ts_20"
+                    tools:text="00:00" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>
