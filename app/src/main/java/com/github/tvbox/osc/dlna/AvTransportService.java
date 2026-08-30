@@ -53,7 +53,7 @@ public class AvTransportService {
     @UpnpStateVariable(sendEvents = false)
     private String AVTransportURIMetaData = "";
 
-    @UpnpStateVariable(sendEvents = false, defaultValue = "0", datatype = "ui4")
+    @UpnpStateVariable(sendEvents = false, defaultValue = "0")
     private Integer CurrentTrack = 0;
 
     @UpnpStateVariable(sendEvents = true, defaultValue = "0:00:00")
@@ -77,7 +77,7 @@ public class AvTransportService {
     @UpnpStateVariable(sendEvents = false, defaultValue = "2147483647", datatype = "i4")
     private Integer AbsoluteCounterPosition = Integer.MAX_VALUE;
 
-    @UpnpStateVariable(sendEvents = false, defaultValue = "1", datatype = "ui4")
+    @UpnpStateVariable(sendEvents = false, defaultValue = "1")
     private Integer NumberOfTracks = 1;
 
     @UpnpStateVariable(sendEvents = false, defaultValue = "0:00:00")
