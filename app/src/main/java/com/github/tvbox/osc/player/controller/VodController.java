@@ -652,16 +652,9 @@ public class VodController extends BaseController {
         mDanmuSearchUiBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.searchDanmuUi(false);
+                FastClickCheckUtil.check(view);
+                listener.searchDanmuOnline();
                 hideBottom();
-            }
-        });
-        mDanmuSearchUiBtn.setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                listener.searchDanmuUi(true);
-                hideBottom();
-                return true;
             }
         });
         mLandscapePortraitBtn.setOnClickListener(new OnClickListener() {
@@ -803,9 +796,12 @@ public class VodController extends BaseController {
         updateDanmuBtn();
     }
 
+    /**
+     * “弹幕”按钮常驻显示，不再依赖当前这一集是否已匹配到弹幕内容。
+     */
     public void updateDanmuBtn() {
         if (mDanmuSettingBtn == null) return;
-        mDanmuSettingBtn.setVisibility(hasDanmu ? VISIBLE : GONE);
+        mDanmuSettingBtn.setVisibility(VISIBLE);
         updateDanmuSettingBtnText();
     }
 
@@ -814,9 +810,13 @@ public class VodController extends BaseController {
         mDanmuSettingBtn.setText("弹幕");
     }
 
+    /**
+     * “云搜”按钮常驻显示在弹幕按钮右边，用于打开在线搜索弹幕对话框；
+     * 不再依赖片源 jar 包是否注册了 hasDanmuSearchUi()。
+     */
     public void updateDanmuSearchUiBtn() {
         if (mDanmuSearchUiBtn == null) return;
-        mDanmuSearchUiBtn.setVisibility(ApiConfig.get().hasDanmuSearchUi() ? VISIBLE : GONE);
+        mDanmuSearchUiBtn.setVisibility(VISIBLE);
     }
 
     public interface VodControlListener {
@@ -840,7 +840,7 @@ public class VodController extends BaseController {
 
         void toggleDanmu();
 
-        void searchDanmuUi(boolean longClick);
+        void searchDanmuOnline();
 
         void startPlayUrl(String url, HashMap<String, String> headers);
 

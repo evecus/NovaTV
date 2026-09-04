@@ -61,6 +61,7 @@ import com.github.tvbox.osc.player.danmu.DanmuLoadController;
 import com.github.tvbox.osc.server.ControlManager;
 import com.github.tvbox.osc.ui.adapter.SelectDialogAdapter;
 import com.github.tvbox.osc.ui.dialog.DanmuFullSettingDialog;
+import com.github.tvbox.osc.ui.dialog.SearchDanmuDialog;
 import com.github.tvbox.osc.ui.dialog.SearchSubtitleDialog;
 import com.github.tvbox.osc.ui.dialog.SelectDialog;
 import com.github.tvbox.osc.ui.dialog.SubtitleDialog;
@@ -296,9 +297,19 @@ public class PlayFragment extends BaseLazyFragment {
             }
 
             @Override
-            public void searchDanmuUi(boolean longClick) {
+            public void searchDanmuOnline() {
+                SearchDanmuDialog searchDanmuDialog = new SearchDanmuDialog(requireContext());
+                searchDanmuDialog.setDanmuLoader(new SearchDanmuDialog.DanmuLoader() {
+                    @Override
+                    public void loadDanmu(String danmu) {
+                        if (!isAdded()) return;
+                        checkDanmu(danmu);
+                    }
+                });
                 VodInfo.VodSeries series = mVodInfo == null ? null : getCurrentSeries(mVodInfo.playFlag, mVodInfo.playIndex);
-                ApiConfig.get().searchDanmuUi(mVodInfo == null ? "" : mVodInfo.name, series == null ? "" : series.name, longClick);
+                searchDanmuDialog.setEpisode(series == null ? "" : series.name);
+                searchDanmuDialog.setSearchWord(mVodInfo == null ? "" : mVodInfo.name);
+                searchDanmuDialog.show();
             }
 
             @Override
