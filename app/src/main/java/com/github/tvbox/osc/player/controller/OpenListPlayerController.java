@@ -52,7 +52,6 @@ public class OpenListPlayerController extends BaseVideoController implements Has
     private boolean infoVisible = false;
     private boolean hasDanmu = false;
 
-    private static final int SEEK_STEP_MS = 10000;
     private static final int AUTO_HIDE_DELAY_MS = 3000;
 
     private final Handler mHideHandler = new Handler(Looper.getMainLooper());
@@ -357,50 +356,122 @@ public class OpenListPlayerController extends BaseVideoController implements Has
 
     // ───────── 遥控器按键 ─────────
 
+    /** 快进快退预览态:ACTION_DOWN 期间只更新预览进度,ACTION_UP 时才真正 seek(与点播页一致) */
+    private boolean seekPreviewActive = false;
+    private long seekPreviewOffset = 0;
+    private long seekPreviewTargetMs = 0;
+    private long lastSeekKeyTime = 0;
+    private static final int SEEK_BASE_STEP_MS = 10000;
+    private static final float SEEK_ACCEL_FACTOR = 2.0f;
+    private static final long SEEK_ACCEL_THRESHOLD_MS = 800;
+
     /**
-     * 遥控器按键处理：返回 true 表示已消费该事件
-     * 【只有按下键】才唤出信息栏
+     * 遥控器按键处理：返回 true 表示已消费该事件，false 表示交还给系统
+     * (系统会处理按钮组内的焦点导航等默认行为)。
+     *
+     * 与点播页保持一致的两种状态：
+     * - 底部栏隐藏时：左右键做快进快退预览(长按靠遥控器连续下发 ACTION_DOWN 实现累加加速，
+     *   抬起时才真正 seek)；下键唤出底部栏并把焦点定位到第一个按钮上。
+     * - 底部栏显示时：左右键交还给系统做按钮间的焦点导航，不再触发 seek。
      */
     public boolean handleKeyEvent(KeyEvent event) {
-        if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
         if (mControlWrapper == null) return false;
         int keyCode = event.getKeyCode();
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_DPAD_CENTER:
-            case KeyEvent.KEYCODE_ENTER:
-            case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+        int action = event.getAction();
+
+        if (isInfoVisible()) {
+            // 底部栏已显示:左右键交还系统做焦点导航，只拦截确定键/播放暂停键
+            if (action == KeyEvent.ACTION_DOWN
+                    && (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)) {
                 togglePlay();
-                // 播放/暂停不主动唤出信息栏（暂停时 onPlayStateChanged 会唤出）
                 return true;
-            case KeyEvent.KEYCODE_DPAD_LEFT:
-            case KeyEvent.KEYCODE_MEDIA_REWIND:
-                seekBy(-SEEK_STEP_MS);
-                return true;
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-            case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
-                seekBy(SEEK_STEP_MS);
-                return true;
-            case KeyEvent.KEYCODE_DPAD_DOWN:
-                // 只有下键才唤出信息栏
-                showInfoWithAutoHide();
-                return true;
-            case KeyEvent.KEYCODE_DPAD_UP:
-                // 上键不处理，交给系统/Activity
-                return false;
-            default:
-                return false;
+            }
+            return false;
         }
+
+        if (action == KeyEvent.ACTION_DOWN) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_DPAD_CENTER:
+                case KeyEvent.KEYCODE_ENTER:
+                case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                    togglePlay();
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_LEFT:
+                case KeyEvent.KEYCODE_MEDIA_REWIND:
+                    seekPreviewStart(-1);
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                    seekPreviewStart(1);
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_DOWN:
+                    // 只有下键才唤出信息栏，并把焦点定位到第一个按钮上
+                    showInfoWithAutoHide();
+                    if (btnPlayNext != null) btnPlayNext.requestFocus();
+                    return true;
+                default:
+                    return false;
+            }
+        } else if (action == KeyEvent.ACTION_UP) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_DPAD_LEFT:
+                case KeyEvent.KEYCODE_MEDIA_REWIND:
+                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                    seekPreviewStop();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        return false;
     }
 
-    private void seekBy(int deltaMs) {
-        long cur = mControlWrapper.getCurrentPosition();
+    /**
+     * 底部栏当前是否真实可见(直接查容器可见性，而非仅凭 infoVisible 旗标)，
+     * 仅底部栏可见时才需要把左右键交还系统做焦点导航，与点播页 isBottomVisible() 语义一致。
+     */
+    private boolean isInfoVisible() {
+        return bottomRoot != null && bottomRoot.getVisibility() == View.VISIBLE;
+    }
+
+    /**
+     * 快进快退预览:只累加内部偏移并刷新进度条/时间文本预览，不真正 seek。
+     * 遥控器按住不放时系统会连续下发 ACTION_DOWN，从而不断累加偏移并按阈值加速，
+     * 松开(ACTION_UP)时才调用 seekPreviewStop 真正跳转，行为与点播页一致。
+     */
+    private void seekPreviewStart(int dir) {
         long duration = mControlWrapper.getDuration();
-        long target = cur + deltaMs;
+        if (duration <= 0) return;
+        long now = System.currentTimeMillis();
+        if (!seekPreviewActive) {
+            seekPreviewActive = true;
+            seekPreviewOffset = (long) SEEK_BASE_STEP_MS * dir;
+        } else if (now - lastSeekKeyTime <= SEEK_ACCEL_THRESHOLD_MS) {
+            seekPreviewOffset += (long) (SEEK_BASE_STEP_MS * SEEK_ACCEL_FACTOR * dir);
+        } else {
+            seekPreviewOffset = (long) SEEK_BASE_STEP_MS * dir;
+        }
+        lastSeekKeyTime = now;
+        long current = mControlWrapper.getCurrentPosition();
+        long target = current + seekPreviewOffset;
         if (target < 0) target = 0;
-        if (duration > 0 && target > duration) target = duration;
-        mControlWrapper.seekTo(target);
-        // seek 时刷新信息栏计时，让用户看到进度变化
+        if (target > duration) target = duration;
+        seekPreviewTargetMs = target;
+        // 预览进度条与时间文本，不真正 seek
+        if (seekBar != null) seekBar.setProgress((int) (target * 1000L / duration));
+        if (tvCurTime != null) tvCurTime.setText(PlayerUtils.stringForTime(PlayerUtils.safeTimeMs(target)));
         showInfoWithAutoHide();
+    }
+
+    /** 松开左右键:真正执行 seek 并恢复播放 */
+    private void seekPreviewStop() {
+        if (!seekPreviewActive) return;
+        mControlWrapper.seekTo(seekPreviewTargetMs);
+        if (!mControlWrapper.isPlaying()) mControlWrapper.start();
+        seekPreviewActive = false;
+        seekPreviewOffset = 0;
+        seekPreviewTargetMs = 0;
     }
 
     /**
