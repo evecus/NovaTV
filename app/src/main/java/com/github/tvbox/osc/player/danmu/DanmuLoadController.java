@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import com.github.tvbox.osc.api.DanmakuApi;
 import com.github.tvbox.osc.player.MyVideoView;
-import com.github.tvbox.osc.player.controller.VodController;
 import com.github.tvbox.osc.util.DanmuHelper;
 import com.github.tvbox.osc.util.LOG;
 
@@ -33,7 +32,7 @@ public class DanmuLoadController {
     }
 
     private final MyVideoView videoView;
-    private final VodController controller;
+    private final HasDanmuIndicator controller;
     private final DanmakuView danmuView;
     private final DanmakuContext danmakuContext;
     private final AtomicInteger loadSeq = new AtomicInteger();
@@ -46,7 +45,7 @@ public class DanmuLoadController {
     private LoadCallback loadCallback;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
-    public DanmuLoadController(MyVideoView videoView, VodController controller, DanmakuView danmuView) {
+    public DanmuLoadController(MyVideoView videoView, HasDanmuIndicator controller, DanmakuView danmuView) {
         this.videoView = videoView;
         this.controller = controller;
         this.danmuView = danmuView;

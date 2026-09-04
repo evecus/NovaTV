@@ -16,18 +16,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.github.tvbox.osc.R;
+import com.github.tvbox.osc.player.danmu.HasDanmuIndicator;
 
 import xyz.doikki.videoplayer.controller.BaseVideoController;
 import xyz.doikki.videoplayer.player.VideoView;
 import xyz.doikki.videoplayer.util.PlayerUtils;
 
 /**
- * 极简播放控制器，专用于 OpenList 视频/音频播放页。
+ * OpenList 视频/音频播放页播放控制器。
  * - 进入全屏后顶部/底部信息栏显示 3 秒后自动隐藏
  * - 只有按遥控器【下键】才重新显示，3 秒无操作再次隐藏
  * - 顶部/底部背景完全透明，无黑色阴影
+ * - 底部新增功能按钮行:下一集/上一集/重播/刷新/内核切换/倍速/弹幕/云搜
  */
-public class OpenListPlayerController extends BaseVideoController {
+public class OpenListPlayerController extends BaseVideoController implements HasDanmuIndicator {
     private TextView tvTitle;
     private TextView tvCurTime;
     private TextView tvTotalTime;
@@ -37,8 +39,18 @@ public class OpenListPlayerController extends BaseVideoController {
     private LinearLayout topRoot;
     private LinearLayout bottomRoot;
 
+    private TextView btnPlayNext;
+    private TextView btnPlayPre;
+    private TextView btnPlayRetry;
+    private TextView btnPlayRefresh;
+    private TextView btnPlayPlayer;
+    private TextView btnPlaySpeed;
+    private TextView btnDanmuSetting;
+    private TextView btnDanmuSearch;
+
     private boolean userSeeking = false;
     private boolean infoVisible = false;
+    private boolean hasDanmu = false;
 
     private static final int SEEK_STEP_MS = 10000;
     private static final int AUTO_HIDE_DELAY_MS = 3000;
@@ -50,6 +62,28 @@ public class OpenListPlayerController extends BaseVideoController {
             hideInfo();
         }
     };
+
+    /** 播放器功能按钮回调,由 Activity 实现具体动作 */
+    public interface OpenListControlListener {
+        void playNext();
+
+        void playPre();
+
+        void replay();
+
+        void refresh();
+
+        /** 切换播放内核(EXO硬/EXO软/IJK硬/IJK软循环) */
+        void switchPlayer();
+
+        void searchDanmuOnline();
+    }
+
+    private OpenListControlListener listener;
+
+    public void setListener(OpenListControlListener listener) {
+        this.listener = listener;
+    }
 
     public OpenListPlayerController(@NonNull Context context) {
         super(context);
@@ -71,6 +105,15 @@ public class OpenListPlayerController extends BaseVideoController {
         pauseIcon  = findViewById(R.id.openlistPauseIcon);
         topRoot    = findViewById(R.id.openlistTopRoot);
         bottomRoot = findViewById(R.id.openlistBottomRoot);
+
+        btnPlayNext     = findViewById(R.id.openlistPlayNext);
+        btnPlayPre      = findViewById(R.id.openlistPlayPre);
+        btnPlayRetry    = findViewById(R.id.openlistPlayRetry);
+        btnPlayRefresh  = findViewById(R.id.openlistPlayRefresh);
+        btnPlayPlayer   = findViewById(R.id.openlistPlayPlayer);
+        btnPlaySpeed    = findViewById(R.id.openlistPlaySpeed);
+        btnDanmuSetting = findViewById(R.id.openlistDanmuSetting);
+        btnDanmuSearch  = findViewById(R.id.openlistDanmuSearch);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -98,6 +141,65 @@ public class OpenListPlayerController extends BaseVideoController {
             }
         });
 
+        btnPlayNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) listener.playNext();
+                showInfoWithAutoHide();
+            }
+        });
+        btnPlayPre.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) listener.playPre();
+                showInfoWithAutoHide();
+            }
+        });
+        btnPlayRetry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) listener.replay();
+                showInfoWithAutoHide();
+            }
+        });
+        btnPlayRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) listener.refresh();
+                showInfoWithAutoHide();
+            }
+        });
+        btnPlayPlayer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) listener.switchPlayer();
+                showInfoWithAutoHide();
+            }
+        });
+        btnPlaySpeed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cycleSpeed();
+                showInfoWithAutoHide();
+            }
+        });
+        btnDanmuSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                com.github.tvbox.osc.ui.dialog.DanmuFullSettingDialog dialog =
+                        new com.github.tvbox.osc.ui.dialog.DanmuFullSettingDialog(getContext());
+                dialog.show();
+                showInfoWithAutoHide();
+            }
+        });
+        btnDanmuSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) listener.searchDanmuOnline();
+                showInfoWithAutoHide();
+            }
+        });
+
         // 进入页面后延一帧显示信息栏（等控制器完全 attach 后）
         post(new Runnable() {
             @Override
@@ -109,6 +211,54 @@ public class OpenListPlayerController extends BaseVideoController {
 
     public void setTitle(String title) {
         if (tvTitle != null) tvTitle.setText(title == null ? "" : title);
+    }
+
+    // ───────── 倍速 ─────────
+
+    private float currentSpeed = 1.0f;
+
+    /** 倍速循环:0.5 → 0.75 → 1.0 → 1.25 → 1.5 → 2.0 → 0.5 ... */
+    private static final float[] SPEED_STEPS = {0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 2.0f};
+
+    private void cycleSpeed() {
+        int idx = 0;
+        for (int i = 0; i < SPEED_STEPS.length; i++) {
+            if (Math.abs(SPEED_STEPS[i] - currentSpeed) < 0.001f) {
+                idx = i;
+                break;
+            }
+        }
+        idx = (idx + 1) % SPEED_STEPS.length;
+        currentSpeed = SPEED_STEPS[idx];
+        if (mControlWrapper != null) mControlWrapper.setSpeed(currentSpeed);
+        updateSpeedText();
+    }
+
+    private void updateSpeedText() {
+        if (btnPlaySpeed != null) btnPlaySpeed.setText("x" + currentSpeed);
+    }
+
+    // ───────── 内核切换按钮文案 ─────────
+
+    public void setPlayerName(String name) {
+        if (btnPlayPlayer != null) btnPlayPlayer.setText(name == null ? "" : name);
+    }
+
+    // ───────── 上一集/下一集按钮可用性 ─────────
+
+    public void setPlayNextEnabled(boolean enabled) {
+        if (btnPlayNext != null) btnPlayNext.setAlpha(enabled ? 1.0f : 0.4f);
+    }
+
+    public void setPlayPreEnabled(boolean enabled) {
+        if (btnPlayPre != null) btnPlayPre.setAlpha(enabled ? 1.0f : 0.4f);
+    }
+
+    // ───────── 弹幕状态 ─────────
+
+    @Override
+    public void setHasDanmu(boolean hasDanmu) {
+        this.hasDanmu = hasDanmu;
     }
 
     // ───────── 显示 / 隐藏 ─────────
@@ -251,5 +401,14 @@ public class OpenListPlayerController extends BaseVideoController {
         mControlWrapper.seekTo(target);
         // seek 时刷新信息栏计时，让用户看到进度变化
         showInfoWithAutoHide();
+    }
+
+    /**
+     * 切到新文件(上一集/下一集/刷新)时调用，重置倍速显示状态，
+     * 新内核/新 URL 起播后倍速从 1.0 重新开始。
+     */
+    public void resetForNewFile() {
+        currentSpeed = 1.0f;
+        updateSpeedText();
     }
 }

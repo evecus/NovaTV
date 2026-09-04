@@ -37,6 +37,7 @@ import com.github.tvbox.osc.ui.dialog.SelectDialog;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.github.tvbox.osc.util.HawkConfig;
 import com.github.tvbox.osc.util.LOG;
+import com.github.tvbox.osc.player.danmu.HasDanmuIndicator;
 import com.github.tvbox.osc.util.M3u8;
 import com.github.tvbox.osc.util.PlayerHelper;
 import com.github.tvbox.osc.util.PlayerSwitchUtil;
@@ -77,7 +78,7 @@ import static xyz.doikki.videoplayer.util.PlayerUtils.stringForTime;
 import static xyz.doikki.videoplayer.util.PlayerUtils.seconds2Time;
 import static xyz.doikki.videoplayer.util.PlayerUtils.safeTimeMs;
 
-public class VodController extends BaseController {
+public class VodController extends BaseController implements HasDanmuIndicator {
     public VodController(@NonNull @NotNull Context context) {
         super(context);
         mHandlerCallback = new HandlerCallback() {
