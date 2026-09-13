@@ -186,6 +186,19 @@ public class DanmuLoadController {
         startIfReady(loadSeq.get());
     }
 
+    /**
+     * 视频进入缓冲/加载中状态时调用（例如拖动进度条松手后、切换清晰度等）。
+     * 缓冲期间画面还没跳到新位置，如果弹幕轨道继续绘制旧位置的内容，
+     * 视觉上会出现“缓冲时旧弹幕还在播、缓冲结束瞬间弹幕跳变消失”的问题。
+     * 这里直接隐藏并暂停弹幕绘制，等 startIfReady() 在真正 STATE_PLAYING 时
+     * 重新 seekTo + 显示，从而让弹幕的出现和画面恢复播放保持同步。
+     */
+    public void pauseForBuffering() {
+        if (danmuView == null || !danmuView.isPrepared()) return;
+        danmuView.pause();
+        danmuView.setVisibility(View.INVISIBLE);
+    }
+
     public void reset() {
         DanmakuApi.cancel();
         danmuText = "";
