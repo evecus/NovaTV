@@ -262,7 +262,6 @@ public class DanmuLoadController {
 
     private void startIfReady(int seq) {
         if (seq != loadSeq.get()
-                || seq == startedSeq
                 || videoView == null
                 || !videoView.isPlaying()
                 || danmuView == null
@@ -272,10 +271,17 @@ public class DanmuLoadController {
         }
         long position = videoView.getCurrentPosition();
         danmuView.setVisibility(View.VISIBLE);
+        // 无论是首次启动还是拖动进度条后的重新对齐，都需要 seekTo 到当前播放位置，
+        // 否则弹幕会从上次记住的位置继续，跟画面对不上。
         danmuView.seekTo(position);
-        danmuView.start(position);
-        startedSeq = seq;
-        toast("加载弹幕成功");
+        if (seq != startedSeq) {
+            // 只有“首次启动”才需要调用 start（初始化弹幕的绘制循环），
+            // 已经启动过的情况下只需 seekTo 重新对齐位置即可，
+            // 重复 start 可能导致弹幕计时器/绘制状态被不必要地重置。
+            danmuView.start(position);
+            startedSeq = seq;
+            toast("加载弹幕成功");
+        }
         LOG.i("echo-danmu start at: " + position);
     }
 
