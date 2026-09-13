@@ -39,7 +39,13 @@ public class MyVideoView extends VideoView implements DrawHandler.Callback {
     @Override
     public void seekTo(long pos) {
         super.seekTo(pos);
-        if (haveDanmu()) danmuView.seekTo(pos);
+        // 注意：这里不再立即调用 danmuView.seekTo(pos)。
+        // seekTo 发出后，底层播放内核通常要经过 STATE_BUFFERING -> STATE_BUFFERED/STATE_PLAYING
+        // 才算真正 seek 完成、画面恢复播放；如果在这里提前把弹幕轨道跳过去，
+        // 会在缓冲期间出现弹幕先动、画面还没到位的错位/闪烁感。
+        // 真正的弹幕同步交给 DanmuLoadController.startIfReady()：它在播放状态
+        // 变为 STATE_PLAYING 后才用当前播放位置对弹幕做 seekTo + start，
+        // 保证“进度条拖完、画面正常播放了，弹幕才跟着到点”。
     }
 
     @Override
