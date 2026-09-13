@@ -202,6 +202,10 @@ public class PlayFragment extends BaseLazyFragment {
         if (danmuLoadController != null) danmuLoadController.startIfReady();
     }
 
+    private void pauseDanmuForBuffering() {
+        if (danmuLoadController != null) danmuLoadController.pauseForBuffering();
+    }
+
     private void resetDanmuState() {
         if (danmuLoadController != null) danmuLoadController.reset();
     }
@@ -283,6 +287,14 @@ public class PlayFragment extends BaseLazyFragment {
                 if (webPlayUrl != null && isStartedPlayState(playState)) {
                     markPlaybackStarted();
                     hideTipOnUiThread();
+                }
+                // 拖动进度条松手后、切换清晰度等场景下，播放器会先进入 STATE_BUFFERING
+                // （视频加载中，画面还没跳到新位置）。这段时间内如果弹幕轨道继续绘制，
+                // 用户会看到“旧弹幕还在播，缓冲结束瞬间弹幕突然跳变/消失”的问题。
+                // 这里在进入缓冲状态时先隐藏弹幕，等真正恢复 STATE_PLAYING 后
+                // startDanmuIfReady() 会重新 seekTo 并显示，保证弹幕和画面同步出现。
+                if (playState == VideoView.STATE_BUFFERING) {
+                    pauseDanmuForBuffering();
                 }
                 startDanmuIfReady();
             }
