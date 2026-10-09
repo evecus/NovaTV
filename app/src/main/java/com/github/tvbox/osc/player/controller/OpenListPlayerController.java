@@ -38,6 +38,9 @@ public class OpenListPlayerController extends BaseVideoController implements Has
     private ImageView pauseIcon;
     private LinearLayout topRoot;
     private LinearLayout bottomRoot;
+    private LinearLayout progressRoot;
+    private ImageView progressIcon;
+    private TextView progressText;
 
     private TextView btnPlayNext;
     private TextView btnPlayPre;
@@ -59,6 +62,15 @@ public class OpenListPlayerController extends BaseVideoController implements Has
         @Override
         public void run() {
             hideInfo();
+        }
+    };
+
+    /** 快进快退预览浮层延迟隐藏(松开按键 1 秒后消失，与点播页一致) */
+    private static final int PROGRESS_HIDE_DELAY_MS = 1000;
+    private final Runnable mHideProgressRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (progressRoot != null) progressRoot.setVisibility(GONE);
         }
     };
 
@@ -104,6 +116,9 @@ public class OpenListPlayerController extends BaseVideoController implements Has
         pauseIcon  = findViewById(R.id.openlistPauseIcon);
         topRoot    = findViewById(R.id.openlistTopRoot);
         bottomRoot = findViewById(R.id.openlistBottomRoot);
+        progressRoot  = findViewById(R.id.openlistProgressRoot);
+        progressIcon  = findViewById(R.id.openlistProgressIcon);
+        progressText  = findViewById(R.id.openlistProgressText);
 
         btnPlayNext     = findViewById(R.id.openlistPlayNext);
         btnPlayPre      = findViewById(R.id.openlistPlayPre);
@@ -461,7 +476,18 @@ public class OpenListPlayerController extends BaseVideoController implements Has
         // 预览进度条与时间文本，不真正 seek
         if (seekBar != null) seekBar.setProgress((int) (target * 1000L / duration));
         if (tvCurTime != null) tvCurTime.setText(PlayerUtils.stringForTime(PlayerUtils.safeTimeMs(target)));
-        showInfoWithAutoHide();
+        // 快进快退期间只显示中间预览浮层，不弹出底部控制栏(与点播页一致)
+        showProgressPreview(dir, target, duration);
+    }
+
+    /** 显示中间快进快退预览浮层:图标 + "目标时间 / 总时长" */
+    private void showProgressPreview(int dir, long target, long duration) {
+        if (progressRoot == null || progressIcon == null || progressText == null) return;
+        mHideHandler.removeCallbacks(mHideProgressRunnable);
+        progressIcon.setImageResource(dir > 0 ? R.drawable.icon_pre : R.drawable.icon_back);
+        progressText.setText(PlayerUtils.stringForTime(PlayerUtils.safeTimeMs(target))
+                + " / " + PlayerUtils.stringForTime(duration));
+        progressRoot.setVisibility(VISIBLE);
     }
 
     /** 松开左右键:真正执行 seek 并恢复播放 */
@@ -472,6 +498,9 @@ public class OpenListPlayerController extends BaseVideoController implements Has
         seekPreviewActive = false;
         seekPreviewOffset = 0;
         seekPreviewTargetMs = 0;
+        // 预览浮层延迟 1 秒后隐藏
+        mHideHandler.removeCallbacks(mHideProgressRunnable);
+        mHideHandler.postDelayed(mHideProgressRunnable, PROGRESS_HIDE_DELAY_MS);
     }
 
     /**

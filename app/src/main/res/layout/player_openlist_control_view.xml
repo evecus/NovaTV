@@ -50,6 +50,40 @@
         android:src="@drawable/icon_play"
         android:visibility="gone" />
 
+    <!-- 中间快进快退预览浮层(与点播页 tv_progress_container 一致) -->
+    <LinearLayout
+        android:id="@+id/openlistProgressRoot"
+        android:layout_width="@dimen/vs_280"
+        android:layout_height="@dimen/vs_200"
+        android:layout_gravity="center"
+        android:background="@drawable/shape_user_focus"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/openlistProgressIcon"
+            android:layout_width="@dimen/vs_60"
+            android:layout_height="@dimen/vs_60"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            tools:src="@drawable/icon_back" />
+
+        <TextView
+            android:id="@+id/openlistProgressText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/vs_20"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/ts_30"
+            tools:text="00:00 / 00:00" />
+    </LinearLayout>
+
     <!-- 底部控制条:功能按钮行 + 进度条行 -->
     <LinearLayout
         android:id="@+id/openlistBottomRoot"
