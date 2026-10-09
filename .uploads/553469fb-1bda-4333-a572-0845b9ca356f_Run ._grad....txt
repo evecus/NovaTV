@@ -1,0 +1,198 @@
+Run ./gradlew assembleJava32Release --no-daemon
+Downloading https://services.gradle.org/distributions/gradle-7.5-bin.zip
+...................................................................................................................
+Unzipping /home/runner/.gradle/wrapper/dists/gradle-7.5-bin/f1w0cc9nuo0eivz97x2xlu9sv/gradle-7.5-bin.zip to /home/runner/.gradle/wrapper/dists/gradle-7.5-bin/f1w0cc9nuo0eivz97x2xlu9sv
+Set executable permissions for: /home/runner/.gradle/wrapper/dists/gradle-7.5-bin/f1w0cc9nuo0eivz97x2xlu9sv/gradle-7.5/bin/gradle
+Welcome to Gradle 7.5!
+Here are the highlights of this release:
+ - Support for Java 18
+ - Support for building with Groovy 4
+ - Much more responsive continuous builds
+ - Improved diagnostics for dependency resolution
+For more details see https://docs.gradle.org/7.5/release-notes.html
+To honour the JVM settings for this build a single-use Daemon process will be forked. See https://docs.gradle.org/7.5/userguide/gradle_daemon.html#sec:disabling_the_daemon.
+Daemon will be stopped at the end of the build 
+Checking the license for package Android SDK Build-Tools 30.0.3 in /usr/local/lib/android/sdk/licenses
+License for package Android SDK Build-Tools 30.0.3 accepted.
+Preparing "Install Android SDK Build-Tools 30.0.3 (revision: 30.0.3)".
+"Install Android SDK Build-Tools 30.0.3 (revision: 30.0.3)" ready.
+Installing Android SDK Build-Tools 30.0.3 in /usr/local/lib/android/sdk/build-tools/30.0.3
+"Install Android SDK Build-Tools 30.0.3 (revision: 30.0.3)" complete.
+"Install Android SDK Build-Tools 30.0.3 (revision: 30.0.3)" finished.
+Checking the license for package Android SDK Platform 33 in /usr/local/lib/android/sdk/licenses
+License for package Android SDK Platform 33 accepted.
+Preparing "Install Android SDK Platform 33 (revision: 3)".
+"Install Android SDK Platform 33 (revision: 3)" ready.
+Installing Android SDK Platform 33 in /usr/local/lib/android/sdk/platforms/android-33
+"Install Android SDK Platform 33 (revision: 3)" complete.
+"Install Android SDK Platform 33 (revision: 3)" finished.
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preJava32ReleaseBuild UP-TO-DATE
+> Task :app:mergeJava32ReleaseJniLibFolders
+> Task :player:preBuild UP-TO-DATE
+> Task :player:preReleaseBuild UP-TO-DATE
+> Task :player:mergeReleaseJniLibFolders
+> Task :quickjs:preBuild UP-TO-DATE
+> Task :quickjs:preReleaseBuild UP-TO-DATE
+> Task :quickjs:mergeReleaseJniLibFolders
+> Task :quickjs:mergeReleaseNativeLibs
+> Task :quickjs:copyReleaseJniLibsProjectOnly
+> Task :player:prepareReleaseArtProfile
+> Task :player:mergeReleaseNativeLibs
+> Task :quickjs:prepareReleaseArtProfile
+> Task :player:copyReleaseJniLibsProjectOnly
+> Task :app:mergeJava32ReleaseArtProfile
+WARNING: [Processor] Library '/home/runner/.gradle/caches/modules-2/files-2.1/com.google.android.exoplayer/exoplayer-ui/2.19.1/f2854c993ee7c931a9970c22ca8a35ace6b3d9af/exoplayer-ui-2.19.1.aar' contains references to both AndroidX and old support library. This seems like the library is partially migrated. Jetifier will try to rewrite the library anyway.
+ Example of androidX reference: 'androidx/core/app/NotificationCompat$Builder'
+ Example of support library reference: 'android/support/v4/media/session/MediaSessionCompat$Token'
+WARNING: [Processor] Library '/home/runner/.gradle/caches/modules-2/files-2.1/me.jessyan/autosize/1.2.1/a44df9822e0cb91242358f070ef813714fd81c05/autosize-1.2.1.aar' contains references to both AndroidX and old support library. This seems like the library is partially migrated. Jetifier will try to rewrite the library anyway.
+ Example of androidX reference: 'androidx/fragment/app/FragmentManager$FragmentLifecycleCallbacks'
+ Example of support library reference: 'android/support/v4/app/FragmentManager$FragmentLifecycleCallbacks'
+> Task :app:mergeJava32ReleaseNativeLibs
+> Task :app:checkJava32ReleaseDuplicateClasses
+> Task :app:stripJava32ReleaseDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libconceal.so, libcronet.101.0.4951.41.so, libffmpegJNI.so, libijkffmpeg.so, libijksdl.so, libp2p.so, libplayer.so, libquickjs-android-wrapper.so, librtmp-jni.so, libxl_stat.so, libxl_thunder_sdk.so.
+> Task :player:compileReleaseAidl NO-SOURCE
+> Task :app:extractJava32ReleaseNativeSymbolTables
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/armeabi/libconceal.so because unable to locate the objcopy executable for the armeabi ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/x86_64/libffmpegJNI.so because unable to locate the objcopy executable for the x86_64 ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/x86_64/libconceal.so because unable to locate the objcopy executable for the x86_64 ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/x86_64/libcronet.101.0.4951.41.so because unable to locate the objcopy executable for the x86_64 ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/x86_64/librtmp-jni.so because unable to locate the objcopy executable for the x86_64 ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/armeabi-v7a/libplayer.so because unable to locate the objcopy executable for the armeabi-v7a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/armeabi-v7a/libffmpegJNI.so because unable to locate the objcopy executable for the armeabi-v7a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/armeabi-v7a/libconceal.so because unable to locate the objcopy executable for the armeabi-v7a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/armeabi-v7a/libxl_stat.so because unable to locate the objcopy executable for the armeabi-v7a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/armeabi-v7a/libxl_thunder_sdk.so because unable to locate the objcopy executable for the armeabi-v7a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/armeabi-v7a/libquickjs-android-wrapper.so because unable to locate the objcopy executable for the armeabi-v7a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/armeabi-v7a/libijkffmpeg.so because unable to locate the objcopy executable for the armeabi-v7a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/armeabi-v7a/libp2p.so because unable to locate the objcopy executable for the armeabi-v7a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/armeabi-v7a/libijksdl.so because unable to locate the objcopy executable for the armeabi-v7a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/armeabi-v7a/libcronet.101.0.4951.41.so because unable to locate the objcopy executable for the armeabi-v7a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/armeabi-v7a/librtmp-jni.so because unable to locate the objcopy executable for the armeabi-v7a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/x86/libffmpegJNI.so because unable to locate the objcopy executable for the x86 ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/x86/libconceal.so because unable to locate the objcopy executable for the x86 ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/x86/libcronet.101.0.4951.41.so because unable to locate the objcopy executable for the x86 ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/x86/librtmp-jni.so because unable to locate the objcopy executable for the x86 ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/arm64-v8a/libplayer.so because unable to locate the objcopy executable for the arm64-v8a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/arm64-v8a/libffmpegJNI.so because unable to locate the objcopy executable for the arm64-v8a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/arm64-v8a/libconceal.so because unable to locate the objcopy executable for the arm64-v8a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/arm64-v8a/libxl_stat.so because unable to locate the objcopy executable for the arm64-v8a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/arm64-v8a/libxl_thunder_sdk.so because unable to locate the objcopy executable for the arm64-v8a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/arm64-v8a/libquickjs-android-wrapper.so because unable to locate the objcopy executable for the arm64-v8a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/arm64-v8a/libijkffmpeg.so because unable to locate the objcopy executable for the arm64-v8a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/arm64-v8a/libp2p.so because unable to locate the objcopy executable for the arm64-v8a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/arm64-v8a/libijksdl.so because unable to locate the objcopy executable for the arm64-v8a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/arm64-v8a/libcronet.101.0.4951.41.so because unable to locate the objcopy executable for the arm64-v8a ABI.
+Unable to extract native debug metadata from /home/runner/work/NovaTV/NovaTV/app/build/intermediates/merged_native_libs/java32Release/out/lib/arm64-v8a/librtmp-jni.so because unable to locate the objcopy executable for the arm64-v8a ABI.
+> Task :app:mergeJava32ReleaseNativeDebugMetadata NO-SOURCE
+> Task :player:compileReleaseRenderscript NO-SOURCE
+> Task :player:generateReleaseBuildConfig
+> Task :player:generateReleaseResValues
+> Task :player:generateReleaseResources
+> Task :player:packageReleaseResources
+> Task :player:parseReleaseLocalResources
+> Task :player:javaPreCompileRelease
+> Task :quickjs:compileReleaseAidl NO-SOURCE
+> Task :quickjs:compileReleaseRenderscript NO-SOURCE
+> Task :quickjs:generateReleaseBuildConfig
+> Task :quickjs:generateReleaseResValues
+> Task :quickjs:generateReleaseResources
+> Task :quickjs:packageReleaseResources
+> Task :quickjs:parseReleaseLocalResources
+> Task :player:processReleaseManifest
+> Task :quickjs:processReleaseManifest
+> Task :quickjs:generateReleaseRFile
+> Task :quickjs:javaPreCompileRelease
+> Task :player:generateReleaseRFile
+> Task :quickjs:compileReleaseJavaWithJavac
+Note: /home/runner/work/NovaTV/NovaTV/quickjs/src/main/java/com/whl/quickjs/wrapper/JSUtils.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: /home/runner/work/NovaTV/NovaTV/player/src/main/java/xyz/doikki/videoplayer/player/VideoView.java uses unchecked or unsafe operations.
+> Task :player:compileReleaseJavaWithJavac
+Note: Recompile with -Xlint:unchecked for details.
+> Task :player:mergeReleaseGeneratedProguardFiles
+> Task :player:exportReleaseConsumerProguardFiles
+> Task :quickjs:mergeReleaseGeneratedProguardFiles
+> Task :quickjs:exportReleaseConsumerProguardFiles
+> Task :app:compileJava32ReleaseAidl NO-SOURCE
+> Task :player:packageReleaseRenderscript NO-SOURCE
+> Task :quickjs:packageReleaseRenderscript NO-SOURCE
+> Task :app:compileJava32ReleaseRenderscript NO-SOURCE
+> Task :app:generateJava32ReleaseBuildConfig
+> Task :app:javaPreCompileJava32Release
+> Task :quickjs:writeReleaseAarMetadata
+> Task :player:writeReleaseAarMetadata
+> Task :app:generateJava32ReleaseResValues
+> Task :app:generateJava32ReleaseResources
+> Task :app:checkJava32ReleaseAarMetadata
+> Task :app:createJava32ReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksJava32Release
+> Task :player:extractDeepLinksRelease
+> Task :quickjs:extractDeepLinksRelease
+> Task :app:processJava32ReleaseMainManifest
+[org.chromium.net:cronet-embedded:101.4951.41] /home/runner/.gradle/caches/transforms-3/afb769089853f9fe157a8408a42d871b/transformed/jetified-cronet-embedded-101.4951.41/AndroidManifest.xml Warning:
+	Namespace 'org.chromium.net' used in: org.chromium.net:cronet-embedded:101.4951.41, org.chromium.net:cronet-common:101.4951.41, org.chromium.net:cronet-api:101.4951.41.
+> Task :app:processJava32ReleaseManifest
+> Task :app:mergeJava32ReleaseResources
+> Task :app:mapJava32ReleaseSourceSetPaths
+> Task :app:processJava32ReleaseManifestForPackage
+> Task :player:compileReleaseLibraryResources
+> Task :quickjs:compileReleaseLibraryResources
+> Task :player:bundleLibCompileToJarRelease
+> Task :quickjs:bundleLibCompileToJarRelease
+> Task :app:extractProguardFiles
+> Task :app:processJava32ReleaseJavaRes NO-SOURCE
+> Task :player:processReleaseJavaRes NO-SOURCE
+> Task :player:bundleLibResRelease NO-SOURCE
+> Task :quickjs:processReleaseJavaRes NO-SOURCE
+> Task :quickjs:bundleLibResRelease NO-SOURCE
+> Task :player:bundleLibRuntimeToJarRelease
+> Task :quickjs:bundleLibRuntimeToJarRelease
+> Task :app:mergeJava32ReleaseShaders
+> Task :app:compileJava32ReleaseShaders NO-SOURCE
+> Task :app:generateJava32ReleaseAssets UP-TO-DATE
+> Task :player:mergeReleaseShaders
+> Task :player:compileReleaseShaders NO-SOURCE
+> Task :player:generateReleaseAssets UP-TO-DATE
+> Task :player:packageReleaseAssets
+> Task :quickjs:mergeReleaseShaders
+> Task :quickjs:compileReleaseShaders NO-SOURCE
+> Task :quickjs:generateReleaseAssets UP-TO-DATE
+> Task :quickjs:packageReleaseAssets
+> Task :app:mergeJava32ReleaseAssets
+> Task :app:compressJava32ReleaseAssets
+> Task :app:collectJava32ReleaseDependencies
+> Task :app:sdkJava32ReleaseDependencyData
+> Task :app:validateSigningJava32Release
+> Task :app:writeJava32ReleaseAppMetadata
+> Task :app:writeJava32ReleaseSigningConfigVersions
+> Task :app:processJava32ReleaseResources
+Error: /home/runner/work/NovaTV/NovaTV/app/src/main/java/com/github/***/osc/player/controller/OpenListPlayerController.java:489: error: incompatible types: possible lossy conversion from long to int
+                + " / " + PlayerUtils.stringForTime(duration));
+                                                    ^
+> Task :app:compileJava32ReleaseJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+1 error
+FAILURE: Build failed with an exception.
+> Task :app:compileJava32ReleaseJavaWithJavac FAILED
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 8.0.
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+See https://docs.gradle.org/7.5/userguide/command_line_interface.html#sec:command_line_warnings
+70 actionable tasks: 70 executed
+* What went wrong:
+Execution failed for task ':app:compileJava32ReleaseJavaWithJavac'.
+> Compilation failed; see the compiler error output for details.
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+* Get more help at https://help.gradle.org
+BUILD FAILED in 2m 10s
+Error: Process completed with exit code 1.

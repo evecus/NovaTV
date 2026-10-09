@@ -486,7 +486,7 @@ public class OpenListPlayerController extends BaseVideoController implements Has
         mHideHandler.removeCallbacks(mHideProgressRunnable);
         progressIcon.setImageResource(dir > 0 ? R.drawable.icon_pre : R.drawable.icon_back);
         progressText.setText(PlayerUtils.stringForTime(PlayerUtils.safeTimeMs(target))
-                + " / " + PlayerUtils.stringForTime(duration));
+                + " / " + PlayerUtils.stringForTime(PlayerUtils.safeTimeMs(duration)));
         progressRoot.setVisibility(VISIBLE);
     }
 
